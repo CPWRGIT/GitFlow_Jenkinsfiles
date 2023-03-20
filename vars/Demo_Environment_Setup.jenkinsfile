@@ -265,7 +265,7 @@ echo "Token " + gitHubAdminTokenPlain
             httpMode:                   'GET', 
             outputFile:                 'job_config.xml', 
             responseHandle:             'NONE', 
-            url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + 'config.xml', 
+            url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + '/config.xml', 
             wrapAsMultipart:            false
         )
 
