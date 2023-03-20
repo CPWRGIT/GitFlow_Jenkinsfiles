@@ -111,8 +111,40 @@ node{
 
     stage("Modify jenkinsfile, ispwconfig, properties"){
 
-        modifyPropertiesFiles(jenkinsfile, ispwConfigFile, sonarLintSettingsFile)
+        def filesStringsList = [
+            [jenkinsfile, 
+                [
+                    ['<hostCredentials>', hostCredentialsId], 
+                    ['<cesCredentials>', cesCredentialsId],
+                    ['<gitRepoUrl>', "https://github.com/CPWRGIT/${gitHubRepo}.git"],
+                    ['<jenkinsGitCredentialsId>', gitCredentialsId],
+                    ['<codeCoverageRepo>', codeCoverageRepo]
+                ]
+            ],
+            [ispwConfigFile,
+                [
+                    ['<hostName>', environmentSettings[targetEnvironment].hostName],
+                    ['<ispwRuntime>', environmentSettings[targetEnvironment].ispwRuntime],
+                    ['<ispwApplication>', ispwApp],    
+                ]
+            ],
+            [sonarLintSettingsFile,
+                [
+                    ['<projectName>', sonarProjectName]
+                ]
+            ]
+        ]
 
+        filesStringsList.each{
+
+            def fileName    = it[0]
+            def stringsList = it[1]
+
+            println "Modifying file: " + fileName.toString()
+
+            replaceFileContent(fileName, stringsList)
+
+        }
     }
     
     // stage("Modify TTT assets"){
@@ -415,44 +447,6 @@ def cloneGitRepository(repo, credentials) {
             ]]
         ]
     )
-}
-
-def modifyPropertiesFiles(jenkinsfile, ispwConfigFile, sonarLintSettingsFile) {
-
-    def filesStringsList = [
-        [jenkinsfile, 
-            [
-                ['<hostCredentials>', hostCredentialsId], 
-                ['<cesCredentials>', cesCredentialsId],
-                ['<gitRepoUrl>', "https://github.com/CPWRGIT/${gitHubRepo}.git"],
-                ['<jenkinsGitCredentialsId>', gitCredentialsId],
-                ['<codeCoverageRepo>', codeCoverageRepo]
-            ]
-        ],
-        [ispwConfigFile,
-            [
-                ['<hostName>', environmentSettings[targetEnvironment].hostName],
-                ['<ispwRuntime>', environmentSettings[targetEnvironment].ispwRuntime],
-                ['<ispwApplication>', ispwApp],    
-            ]
-        ],
-        [sonarLintSettingsFile,
-            [
-                ['<projectName>', sonarProjectName]
-            ]
-        ]
-    ]
-
-    filesStringsList.each{
-
-        def fileName    = it[0]
-        def stringsList = it[1]
-
-        println "Modifying file: " + fileName.toString()
-
-        replaceFileContent(fileName, stringsList)
-
-    }
 }
 
 def replaceFileContent(fileName, stringsList){
