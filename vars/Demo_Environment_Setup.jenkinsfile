@@ -79,7 +79,7 @@ node{
 //    extractEnvironmentCredentials()
 
     gitHubAdminTokenPlain   = getGitHubAdminTokenPlain(gitHubAdminCredentialsTk)
-    gitHubAdminTokenBasic   = getGitHubAdminTokenBasic(gitHubTokenStore)
+    gitHubAdminTokenBasic   = getGitHubAdminTokenBasic(gitHubAdminTokenStore)
     sonarQubeToken          = getSonarQubeToken(sonarQubeTokenStore)
 
     def sonarProjectName    = environmentSettings[targetEnvironment].sonarProjectName
