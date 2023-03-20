@@ -20,12 +20,13 @@ String projectSettingsFile      = "./GenApp_MainframeCore/.settings/GenApp_Mainf
 String sonarLintSettingsFile    = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
 
 String sonarServerUrl           = "http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
-String sonarQualityGateId       = "AYb96SGym7XD63sZxcew"                                            //"AXY8wyJYYfaPLsZ5QP7_"
-String sonarQubeToken           = 'Basic NDk5NDM5ZmI2NTYwZWFlZGYxNDdmNjJhOTQ1NjQ2ZDE2YWQzYWU1Njo='  //499439fb6560eaedf147f62a945646d16ad3ae56
+String sonarQualityGateId       = "AYb96SGym7XD63sZxcew"
+String sonarQubeTokenStore      = 'SonarQube_Token_Basic'
+String sonarQubeToken           = 'Basic'
 
 String repoTemplate             = 'GitFlow_Template'
-String gitHubToken              = 'Basic Y3B3cmdpdDpnaHBfalNjUFA5T1luNUJQMTFIZ244WXpvbVNJNlcwTEJmMVh4c1BT' //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
-                                //'Basic Y3B3cmdpdDpkMmU0ZDZiZTBlZTg2ODgzMzgwZGU3MWI2M2YyZmQ0ZmQ3MThmZjk4' 
+String gitHubTokenStore         = 'CPWRGIT_Token_Basic'
+String gitHubToken              = 'Basic'
 
 def environmentSettings         = [
                                     'CWCC': [
@@ -83,6 +84,34 @@ node{
         {
             error '[Error] - The specified GitHub credentials could not be verified. Aborting process.'
         }
+    }
+
+    withCredentials(
+        [
+            string( 
+                [
+                    credentialsId:  gitHubTokenStore, 
+                    variable:       'cpwrgitTokenTmp'
+                ]
+            )
+        ]
+    )
+    {
+        gitHubToken = gitHubToken + ' ' + cpwrgitTokenTmp
+    }
+
+    withCredentials(
+        [
+            string( 
+                [
+                    credentialsId:  sonarQubeTokenStore, 
+                    variable:       'sonarQubeTokenTmp'
+                ]
+            )
+        ]
+    )
+    {
+        sonarQubeToken = sonarQubeToken + ' ' + sonarQubeTokenTmp
     }
 
     def sonarProjectName    = environmentSettings[targetEnvironment].sonarProjectName
