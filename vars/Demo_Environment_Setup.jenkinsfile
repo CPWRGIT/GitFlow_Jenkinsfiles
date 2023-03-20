@@ -40,8 +40,6 @@ String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
 String jenkinsJobTemplate           = 'GitFlow_Template'
 String jenkinsJobName               = 'GitFlow_' + ispwApp.substring(ispwApp.length() - 1)
 
-echo "Create JobName" + jenkinsJobName
-
 def environmentSettings             = [
         'CWCC': [
             'lparName':                 'CWCC',
@@ -113,7 +111,7 @@ node{
 
     stage("Modify jenkinsfile, ispwconfig, properties"){
 
-        modifyPropertiesFiles()
+        modifyPropertiesFiles(jenkinsfile, ispwConfigFile, sonarLintSettingsFile)
 
     }
     
@@ -419,7 +417,7 @@ def cloneGitRepository(repo, credentials) {
     )
 }
 
-def modifyPropertiesFiles() {
+def modifyPropertiesFiles(jenkinsfile, ispwConfigFile, sonarLintSettingsFile) {
 
     def filesStringsList = [
         [jenkinsfile, 
