@@ -260,8 +260,30 @@ echo "Token " + gitHubAdminTokenPlain
 
     stage("Create Jenkins Multibranch Pipeline") {
 
-        createJenkinsJob()
+        httpRequest(
+            consoleLogResponseBody:     true, 
+            httpMode:                   'GET', 
+            outputFile:                 'job_config.xml', 
+            responseHandle:             'NONE', 
+            url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + 'config.xml', 
+            wrapAsMultipart:            false
+        )
 
+        def tmpConfig = readFile("./job_config.xml")
+
+        tmpConfig = tmpConfig.replace('xxxxxx', hostUserId).replace("&lt;gitHubRepo&gt;", gitHubRepo)
+        
+        writeFile(file: './job_config.xml', text: tmpConfig)
+        
+        httpRequest(
+            consoleLogResponseBody:     true, 
+            customHeaders:              [[maskValue: false, name: 'Content-Type', value: 'text/xml']],
+            httpMode:                   'POST', 
+            responseHandle:             'NONE', 
+            uploadFile:                 './job_config.xml', 
+            url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
+            wrapAsMultipart: false
+        )
     }
     // stage("Allocate and copy TEST datasets"){
 
@@ -573,34 +595,6 @@ def finalizeGitHub(repo, userid, token) {
         bat(returnStdout: true, script: 'git branch feature/demo_feature')
         bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} refs/heads/feature/demo_feature:refs/heads/feature/demo_feature -f")
     }
-}
-
-def createJenkinsJob() {
-
-    httpRequest(
-        consoleLogResponseBody:     true, 
-        httpMode:                   'GET', 
-        outputFile:                 'job_config.xml', 
-        responseHandle:             'NONE', 
-        url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + 'config.xml', 
-        wrapAsMultipart:            false
-    )
-
-    def tmpConfig = readFile("./job_config.xml")
-
-    tmpConfig = tmpConfig.replace('xxxxxx', hostUserId).replace("&lt;gitHubRepo&gt;", gitHubRepo)
-    
-    writeFile(file: './job_config.xml', text: tmpConfig)
-    
-    httpRequest(
-        consoleLogResponseBody:     true, 
-        customHeaders:              [[maskValue: false, name: 'Content-Type', value: 'text/xml']],
-        httpMode:                   'POST', 
-        responseHandle:             'NONE', 
-        uploadFile:                 './job_config.xml', 
-        url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
-        wrapAsMultipart: false
-    )
 }
 
 def buildJcl(ispwApp){
