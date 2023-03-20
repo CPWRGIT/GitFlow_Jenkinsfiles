@@ -1,137 +1,84 @@
 import groovy.json.JsonSlurper
 
 // Pipeline Parameters
-String hostUserId               = HostUserId.toUpperCase()
-String hostCredentialsId        = HostCredentialsId
-String ispwApp                  = IspwApp.toUpperCase()
-String cesCredentialsId         = CesCredentialsId
-String gitCredentialsId         = GitCredentialsId
-String codeCoverageRepo         = CodeCoverageRepo.toUpperCase()
-String gitHubAdminUser          = GitHubAdminUser.toUpperCase()
-String gitHubAdminPassword      = GitHubAdminPassword
+String hostUserId                   = HostUserId.toUpperCase()
+String hostCredentialsId            = HostCredentialsId
+String ispwApp                      = IspwApp.toUpperCase()
+String cesCredentialsId             = CesCredentialsId
+String gitCredentialsId             = GitCredentialsId
+String codeCoverageRepo             = CodeCoverageRepo.toUpperCase()
+String gitHubAdminUser              = GitHubAdminUser.toUpperCase()
+String gitHubAdminPassword          = GitHubAdminPassword
 
-// String defaultUtLevel           = DefaultUtLevel.toUpperCase()
-// String defaultFtLevel           = DefaultFtLevel.toUpperCase()
+// String defaultUtLevel               = DefaultUtLevel.toUpperCase()
+// String defaultFtLevel               = DefaultFtLevel.toUpperCase()
 
-String hostName
-String targetEnvironment        = 'CWCC'
+String hostName 
+String targetEnvironment            = 'CWCC'
 
-String jenkinsfile              = "./GitFlow.jenkinsfile"
-String ispwConfigFile           = "./GenApp_MainframeCore/ispwconfig.yml"
-String projectSettingsFile      = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
-String sonarLintSettingsFile    = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
+String jenkinsfile                  = "./GitFlow.jenkinsfile"
+String ispwConfigFile               = "./GenApp_MainframeCore/ispwconfig.yml"
+String projectSettingsFile          = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
+String sonarLintSettingsFile        = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
 
-String sonarServerUrl           = "http://192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
-String sonarQualityGateId       = "AYb96SGym7XD63sZxcew"
-String sonarQubeTokenStore      = 'SonarQube_Token_Basic'
-String sonarQubeToken           = 'Basic'
+String sonarServerUrl               = "http://192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
+String sonarQualityGateId           = "AYb96SGym7XD63sZxcew"
+String sonarQubeTokenStore          = 'SonarQube_Token_Basic'
+String sonarQubeToken               = ''
 
-String repoTemplate             = 'GitFlow_Template'
-String gitHubAdminCredentialsPw = 'CPWRGIT'
-String gitHubAdminCredentialsTk = 'CPWRGIT_GitHub_New'
-String gitHubTokenStore         = 'CPWRGIT_Token_Basic'
-String gitHubAdminUserCheck     = ''
-String gitHubAdminPwCheck       = ''
-String gitHubAdminToken         = ''
+String repoTemplate                 = 'GitFlow_Template'
 
-String gitHubToken              = 'Basic'
+String gitHubAdminCredentialsPw     = 'CPWRGIT'
+String gitHubAdminCredentialsTk     = 'CPWRGIT_GitHub_New'
+String gitHubAdminTokenStore        = 'CPWRGIT_Token_Basic'
+String gitHubAdminTokenPlain        = ''
+String gitHubAdminTokenBasic        = ''
 
-def environmentSettings         = [
-                                    'CWCC': [
-                                        'lparName':                 'CWCC',
-                                        'hostName':                 'cwcc.bmc.com',
-                                        'hciConnectionId':          'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756',
-                                        'ispwRuntime':              'iccga',
-                                        'xgSsid':                   'MXG1',
-                                        'sonarProjectName':         "${ispwApp}",
-                                        'gitHubRepo':               "GitFlow_" + hostUserId, 
-                                        'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
-                                        'componentIds':             [
-                                            'CWXTCOB':              '5d5fea81180742000cf98888'
-                                        ]
-                                    ],
-                                    'CWC2': [
-                                        'lparName':                 'CWC2',                                    
-                                        'hostName':                 'cwc2.bmc.com',
-                                        'hciConnectionId':          '263438b6-f699-4373-be9f-378af3d28633',
-                                        'ispwRuntime':              'ic2ga',
-                                        'xgSsid':                   'MXG2',   
-                                        'sonarProjectName':         "${ispwApp}",
-                                        'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
-                                        'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
-                                        'componentIds':             [
-                                            'CWXTCOB':              '6046063418074200e864cb5e'
-                                        ]                                    
-                                    ]
-                                ]
+String jenkinsUrl                   = 'http://192.168.96.133:8080'
+String jenkinsGitFlowFolder         = 'GitFlow'
+String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
+String jenkinsJobTemplate           = 'GitFlow_Template'
+String jenkinsJobName               = 'GitFlow_' + ispwApp.subString(ispwApp.length() - 1)
 
-def components = ['CWXTCOB']
+def environmentSettings             = [
+        'CWCC': [
+            'lparName':                 'CWCC',
+            'hostName':                 'cwcc.bmc.com',
+            'hciConnectionId':          'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756',
+            'ispwRuntime':              'iccga',
+            'xgSsid':                   'MXG1',
+            'sonarProjectName':         "${ispwApp}",
+            'gitHubRepo':               "GitFlow_" + hostUserId, 
+            'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
+            'componentIds':             [
+                'CWXTCOB':              '5d5fea81180742000cf98888'
+            ]
+        ],
+        'CWC2': [
+            'lparName':                 'CWC2',                                    
+            'hostName':                 'cwc2.bmc.com',
+            'hciConnectionId':          '263438b6-f699-4373-be9f-378af3d28633',
+            'ispwRuntime':              'ic2ga',
+            'xgSsid':                   'MXG2',   
+            'sonarProjectName':         "${ispwApp}",
+            'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
+            'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
+            'componentIds':             [
+                'CWXTCOB':              '6046063418074200e864cb5e'
+            ]                                    
+        ]
+    ]
+
+def components                      = ['CWXTCOB']
 
 node{
 
-    withCredentials(
-        [
-            usernamePassword(
-                credentialsId:      gitHubAdminCredentialsPw, 
-                passwordVariable:   'gitHubAdminPwTmp', 
-                usernameVariable:   'gitHubAdminUserTmp'
-            )
-        ]
-    )
-    {
+    checkPipelineCredentials()
+    extractEnvironmentCredentials()
 
-        gitHubAdminUserCheck = gitHubAdminUserTmp
-        gitHubAdminPwCheck = gitHubAdminPwTmp
-
-        if(
-            !(gitHubAdminUser       == gitHubAdminUserCheck) ||
-            !(gitHubAdminPassword   == gitHubAdminPwCheck)
-        )
-        {
-            error '[Error] - The specified GitHub credentials could not be verified. Aborting process.'
-        }
-    }
-
-    withCredentials(
-        [
-            usernamePassword(
-                credentialsId:      gitHubAdminCredentialsTk, 
-                passwordVariable:   'gitHubAdminTkTmp', 
-                usernameVariable:   'gitHubAdminUserTmp'
-            )
-        ]
-    )
-    {
-        gitHubAdminToken = gitHubAdminTkTmp
-    }
-
-    withCredentials(
-        [
-            string( 
-                [
-                    credentialsId:  gitHubTokenStore, 
-                    variable:       'cpwrgitTokenTmp'
-                ]
-            )
-        ]
-    )
-    {
-        gitHubToken = gitHubToken + ' ' + cpwrgitTokenTmp
-    }
-
-    withCredentials(
-        [
-            string( 
-                [
-                    credentialsId:  sonarQubeTokenStore, 
-                    variable:       'sonarQubeTokenTmp'
-                ]
-            )
-        ]
-    )
-    {
-        sonarQubeToken = sonarQubeToken + ' ' + sonarQubeTokenTmp
-    }
+    gitHubAdminTokenPlain   = getGitHubAdminTokenPlain
+    gitHubAdminTokenBasic   = getGitHubToken()
+    sonarQubeToken          = getSonarQubeToken()
 
     def sonarProjectName    = environmentSettings[targetEnvironment].sonarProjectName
     def gitHubRepo          = environmentSettings[targetEnvironment].gitHubRepo
@@ -144,144 +91,28 @@ node{
 
     stage("Check Git Repository"){
 
-        try{
+        checkGitRepository(gitHubAdminTokenBasic, gitHubRepo)
 
-            def response = httpRequest(
-
-                consoleLogResponseBody: true, 
-                customHeaders:          [
-                    [maskValue: false,  name: 'content-type',   value: 'application/json'], 
-                    [maskValue: true,   name: 'authorization',  value: gitHubToken], 
-                    // [maskValue: false,  name: 'accept',         value: 'application/vnd.github.v3+json'], 
-                    [maskValue: false,  name: 'accept',         value: 'application/vnd.github+json'],                     
-                    [maskValue: false,  name: 'user-agent',     value: 'cpwrgit']
-                ], 
-                ignoreSslErrors:        true, 
-                url:                    'https://api.github.com/repos/CPWRGIT/' + gitHubRepo, 
-                validResponseCodes:     '200,404', 
-                wrapAsMultipart:        false
-
-            )
-
-            if(response.status == 200){
-
-                error "[Error] - The repository ${gitHubRepo} already exists. Cannot create again.\n"
-
-            }
-
-        }
-        catch(exception){
-
-            error "[Error] - " + exception.toString() + ". See previous log messages to determine cause.\n"
-
-        }
     }
 
     stage("Create Git Repository"){
 
-        try{
+        createGitRepository(gitHubAdminTokenBasic, gitHubRepo, repoTemplate)
 
-            def requestBody = '''{
-                    "owner":    "CPWRGIT",
-                    "name":     "''' + gitHubRepo + '''",
-                    "private":  false   
-                }'''
-
-            httpRequest(
-                consoleLogResponseBody:     true, 
-                customHeaders:              [
-                    [maskValue: false,  name: 'content-type',   value: 'application/json'], 
-                    [maskValue: true,   name: 'authorization',  value: gitHubToken], 
-                    // [maskValue: true,   name: 'authorization',  value: 'Basic Y3B3cmdpdDpkMmU0ZDZiZTBlZTg2ODgzMzgwZGU3MWI2M2YyZmQ0ZmQ3MThmZjk4'], 
-                    [maskValue: false,  name: 'accept',         value: 'application/vnd.github+json'], 
-                    // [maskValue: false,  name: 'accept',         value: 'application/vnd.github.baptiste-preview+json'], 
-                    [maskValue: false,  name: 'user-agent',     value: 'cpwrgit']
-                ], 
-                httpMode:                   'POST', 
-                ignoreSslErrors:            true, 
-                requestBody:                requestBody, 
-                url:                        'https://api.github.com/repos/CPWRGIT/' + repoTemplate + '/generate', 
-                validResponseCodes:         '201', 
-                wrapAsMultipart:            false
-            )
-
-        }
-        catch(exception){
-
-            error "[Error] - Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause.\n"
-        
-        }
     }
 
     sleep 30
 
     stage("Clone Git repository"){
-        
-        checkout(
-            changelog: false, 
-            poll: false, 
-            scm: [
-                $class: 'GitSCM', 
-                branches: [[name: '*/main']], 
-                doGenerateSubmoduleConfigurations: false, 
-                extensions: [], 
-                submoduleCfg: [], 
-                userRemoteConfigs: [[
-                    credentialsId: gitHubAdminCredentialsTk,
-                    url: "https://github.com/CPWRGIT/${gitHubRepo}.git"
-                ]]
-            ]
-        )
+
+        cloneGitRepository(gitHubRepo, gitHubAdminCredentialsTk)        
+
     }
 
     stage("Modify jenkinsfile, ispwconfig, properties"){
 
-        def filesStringsList = [
-            [jenkinsfile, 
-                [
-                    ['<hostCredentials>', hostCredentialsId], 
-                    ['<cesCredentials>', cesCredentialsId],
-                    ['<gitRepoUrl>', "https://github.com/CPWRGIT/${gitHubRepo}.git"],
-                    ['<jenkinsGitCredentialsId>', gitCredentialsId],
-                    ['<codeCoverageRepo>', codeCoverageRepo]
-                ]
-            ],
-            [ispwConfigFile,
-                [
-                    ['<hostName>', environmentSettings[targetEnvironment].hostName],
-                    ['<ispwRuntime>', environmentSettings[targetEnvironment].ispwRuntime],
-                    ['<ispwApplication>', ispwApp],    
-                ]
-            ],
-            [sonarLintSettingsFile,
-                [
-                    ['<projectName>', sonarProjectName]
-                ]
-            ]
-            // ,
-            // [projectSettingsFile,
-            //     [
-            //         ['${ispw_mapping_level}', DefaultUtLevel]
-            //     ]
-            // ]
-        ]
+        modifyPropertiesFiles()
 
-// String hostCredentialsId    = '<hostCredentials>'                   /* Change to Jenkins credentials ID for Host userid/password            */
-// String cesCredentialsId     = '<cesCredentials>'                    /* Change to Jenkins credentials ID for CES token                       */
-// String gitRepoUrl           = '<gitRepoUrl>'                        /* Change "<repo>" to user specific repository name                     */
-// String gitCredentialsId     = '<gitJenkinsCredentialsId>'           /* Change to Jenkins credentials ID for GitHub personal access token    */
-// String ccRepo               = '<codeCoverageRepo>'                  /* Change to user specific code coverage repository                     */
-
-        filesStringsList.each{
-    
-            def fileName    = it[0]
-            def stringsList = it[1]
-
-            println "Modifying file: " + fileName.toString()
-
-            replaceFileContent(fileName, stringsList)
-
-        }
     }
     
     // stage("Modify TTT assets"){
@@ -389,28 +220,16 @@ node{
     }
     
     stage("Push to GitHub and create new branches"){
-        
-        def message     = '"Inital Setup"'
-        
-        dir("./")
-        {
-            bat(returnStdout: true, script: 'git config user.email "cpwrgit@compuware.com"')
-            bat(returnStdout: true, script: 'git config user.name "CPWRGIT"')
-            //bat(returnStdout: true, script: 'git config --global credential.helper wincred')
-            bat(returnStdout: true, script: 'git commit -a -m ' + message)
-            bat(returnStdout: true, script: "git push  https://" + gitHubAdminUser + ":" + gitHubAdminToken + "@github.com/CPWRGIT/${gitHubRepo} HEAD:main -f")
-            //bat(returnStdout: true, script: "git push  https://github.com/CPWRGIT/${gitHubRepo} HEAD:main -f")
-            
-            bat(returnStdout: true, script: 'git branch development')
-            bat(returnStdout: true, script: "git push  https://" + gitHubAdminUser + ":" + gitHubAdminToken + "@github.com/CPWRGIT/${gitHubRepo} refs/heads/development:refs/heads/development -f")
-            //bat(returnStdout: true, script: "git push  https://github.com/CPWRGIT/${gitHubRepo} refs/heads/development:refs/heads/development -f")
 
-            bat(returnStdout: true, script: 'git branch feature/demo_feature')
-            bat(returnStdout: true, script: "git push  https://" + gitHubAdminUser + ":" + gitHubAdminToken + "@github.com/CPWRGIT/${gitHubRepo} refs/heads/feature/demo_feature:refs/heads/feature/demo_feature -f")
-            //bat(returnStdout: true, script: "git push  https://github.com/CPWRGIT/${gitHubRepo} refs/heads/feature/${DefaultFtLevel}/demo_feature:refs/heads/feature/${DefaultFtLevel}/demo_feature -f")
-        }
+        finalizeGitHub(gitHubAdminUser, gitHubAdminTokenPlain, gitHubRepo)
+
     }
 
+    stage("Create Jenkins Multibranch Pipeline") {
+
+        createJenkinsJob()
+
+    }
     // stage("Allocate and copy TEST datasets"){
 
     //     def jobJcl = buildJcl(ispwApp)
@@ -423,6 +242,217 @@ node{
     //     )    
 
     // }
+}
+
+def checkPipelineCredentials(){
+
+    withCredentials(
+        [
+            usernamePassword(
+                credentialsId:      gitHubAdminCredentialsPw, 
+                passwordVariable:   'gitHubAdminPwTmp', 
+                usernameVariable:   'gitHubAdminUserTmp'
+            )
+        ]
+    )
+    {
+        if(
+            !(gitHubAdminUser       == gitHubAdminUserTmp) ||
+            !(gitHubAdminPassword   == gitHubAdminPwTmp)
+        )
+        {
+            error '[Error] - The specified GitHub credentials could not be verified. Aborting process.'
+        }
+    }
+}
+
+def getGitHubAdminTokenPlain () {
+
+    def token
+
+    withCredentials(
+        [
+            usernamePassword(
+                credentialsId:      gitHubAdminCredentialsTk, 
+                passwordVariable:   'gitHubAdminTkTmp', 
+                usernameVariable:   'gitHubAdminUserTmp'
+            )
+        ]
+    )
+    {
+        token = gitHubAdminTkTmp
+    }
+
+    return token
+}
+
+def getGitHubAdminTokenBasic() {
+
+    def token = 'Basic'
+
+    withCredentials(
+        [
+            string( 
+                [
+                    credentialsId:  gitHubTokenStore, 
+                    variable:       'cpwrgitTokenTmp'
+                ]
+            )
+        ]
+    )
+    {
+        token = token + ' ' + cpwrgitTokenTmp
+    }
+
+    return token
+}
+
+def getSonarQubeToken() {
+
+    def token = 'Basic'
+
+    withCredentials(
+        [
+            string( 
+                [
+                    credentialsId:  sonarQubeTokenStore, 
+                    variable:       'sonarQubeTokenTmp'
+                ]
+            )
+        ]
+    )
+    {
+        token = token + ' ' + sonarQubeTokenTmp
+    }
+
+    return token
+}
+
+def checkGitRepository(token, repo) {
+
+    try{
+
+        def response = httpRequest(
+
+            consoleLogResponseBody: true, 
+            customHeaders:          [
+                [maskValue: false,  name: 'content-type',   value: 'application/json'], 
+                [maskValue: true,   name: 'authorization',  value: token], 
+                // [maskValue: false,  name: 'accept',         value: 'application/vnd.github.v3+json'], 
+                [maskValue: false,  name: 'accept',         value: 'application/vnd.github+json'],                     
+                [maskValue: false,  name: 'user-agent',     value: 'cpwrgit']
+            ], 
+            ignoreSslErrors:        true, 
+            url:                    'https://api.github.com/repos/CPWRGIT/' + repo, 
+            validResponseCodes:     '200,404', 
+            wrapAsMultipart:        false
+
+        )
+
+        if(response.status == 200){
+
+            error "[Error] - The repository ${repo} already exists. Cannot create again.\n"
+
+        }
+
+    }
+    catch(exception){
+
+        error "[Error] - " + exception.toString() + ". See previous log messages to determine cause.\n"
+
+    }
+
+}
+
+def createGitRepository(token, repo, template) {
+
+    try{
+
+        def requestBody = '''{
+                "owner":    "CPWRGIT",
+                "name":     "''' + repo + '''",
+                "private":  false   
+            }'''
+
+        httpRequest(
+            consoleLogResponseBody:     true, 
+            customHeaders:              [
+                [maskValue: false,  name: 'content-type',   value: 'application/json'], 
+                [maskValue: true,   name: 'authorization',  value: token], 
+                [maskValue: false,  name: 'accept',         value: 'application/vnd.github+json'], 
+                [maskValue: false,  name: 'user-agent',     value: 'cpwrgit']
+            ], 
+            httpMode:                   'POST', 
+            ignoreSslErrors:            true, 
+            requestBody:                requestBody, 
+            url:                        'https://api.github.com/repos/CPWRGIT/' + template + '/generate', 
+            validResponseCodes:         '201', 
+            wrapAsMultipart:            false
+        )
+
+    }
+    catch(exception){
+
+        error "[Error] - Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause.\n"
+    
+    }
+}
+
+def cloneGitRepository(repo, credentials) {
+
+    checkout(
+        changelog: false, 
+        poll: false, 
+        scm: [
+            $class: 'GitSCM', 
+            branches: [[name: '*/main']], 
+            doGenerateSubmoduleConfigurations: false, 
+            extensions: [], 
+            submoduleCfg: [], 
+            userRemoteConfigs: [[
+                credentialsId: credentials,
+                url: "https://github.com/CPWRGIT/${repo}.git"
+            ]]
+        ]
+    )
+}
+
+def modifyPropertiesFiles() {
+
+    def filesStringsList = [
+        [jenkinsfile, 
+            [
+                ['<hostCredentials>', hostCredentialsId], 
+                ['<cesCredentials>', cesCredentialsId],
+                ['<gitRepoUrl>', "https://github.com/CPWRGIT/${gitHubRepo}.git"],
+                ['<jenkinsGitCredentialsId>', gitCredentialsId],
+                ['<codeCoverageRepo>', codeCoverageRepo]
+            ]
+        ],
+        [ispwConfigFile,
+            [
+                ['<hostName>', environmentSettings[targetEnvironment].hostName],
+                ['<ispwRuntime>', environmentSettings[targetEnvironment].ispwRuntime],
+                ['<ispwApplication>', ispwApp],    
+            ]
+        ],
+        [sonarLintSettingsFile,
+            [
+                ['<projectName>', sonarProjectName]
+            ]
+        ]
+    ]
+
+    filesStringsList.each{
+
+        def fileName    = it[0]
+        def stringsList = it[1]
+
+        println "Modifying file: " + fileName.toString()
+
+        replaceFileContent(fileName, stringsList)
+
+    }
 }
 
 def replaceFileContent(fileName, stringsList){
@@ -528,6 +558,54 @@ def renameBranch(sonarProjectName, sonarServerUrl, sonarQubeToken){
         url:                        "${sonarServerUrl}/api/project_branches/rename?name=main&project=${sonarProjectName}"
 
     echo "Renamed master branch of SonarQube project ${sonarProjectName} to 'main'."
+}
+
+def finalizeGitHub(repo, userid, token) {
+    
+    def message     = '"Inital Setup"'
+        
+    dir("./")
+    {
+        bat(returnStdout: true, script: 'git config user.email "cpwrgit@compuware.com"')
+        bat(returnStdout: true, script: 'git config user.name "CPWRGIT"')
+
+        bat(returnStdout: true, script: 'git commit -a -m ' + message)
+        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} HEAD:main -f")
+        
+        bat(returnStdout: true, script: 'git branch development')
+        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} refs/heads/development:refs/heads/development -f")
+
+        bat(returnStdout: true, script: 'git branch feature/demo_feature')
+        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} refs/heads/feature/demo_feature:refs/heads/feature/demo_feature -f")
+    }
+}
+
+def createJenkinsJob() {
+
+    httpRequest(
+        consoleLogResponseBody:     true, 
+        httpMode:                   'GET', 
+        outputFile:                 'job_config.xml', 
+        responseHandle:             'NONE', 
+        url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + 'config.xml', 
+        wrapAsMultipart:            false
+    )
+
+    def tmpConfig = readFile("./job_config.xml")
+
+    tmpConfig = tmpConfig.replace('xxxxxx', hostUserId).replace("&lt;gitHubRepo&gt;", gitHubRepo)
+    
+    writeFile(file: './job_config.xml', text: tmpConfig)
+    
+    httpRequest(
+        consoleLogResponseBody:     true, 
+        customHeaders:              [[maskValue: false, name: 'Content-Type', value: 'text/xml']],
+        httpMode:                   'POST', 
+        responseHandle:             'NONE', 
+        uploadFile:                 './job_config.xml', 
+        url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
+        wrapAsMultipart: false
+    )
 }
 
 def buildJcl(ispwApp){
