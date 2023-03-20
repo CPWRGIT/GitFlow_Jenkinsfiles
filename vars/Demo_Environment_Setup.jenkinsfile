@@ -254,7 +254,7 @@ echo "Token " + gitHubAdminTokenPlain
     
     stage("Push to GitHub and create new branches"){
 
-        finalizeGitHub(gitHubAdminUser, gitHubAdminTokenPlain, gitHubRepo)
+        finalizeGitHub(gitHubRepo, gitHubAdminUser, gitHubAdminTokenPlain)
 
     }
 
