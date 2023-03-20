@@ -249,7 +249,7 @@ node{
             [ispwConfigFile,
                 [
                     ['<hostName>', environmentSettings[targetEnvironment].hostName],
-                    ['<ispwRuntime>', environmentSettings[targetEnvironment].ispwRuntime]
+                    ['<ispwRuntime>', environmentSettings[targetEnvironment].ispwRuntime],
                     ['<ispwApplication>', ispwApp],    
                 ]
             ],
