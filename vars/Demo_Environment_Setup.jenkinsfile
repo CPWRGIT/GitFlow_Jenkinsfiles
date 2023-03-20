@@ -75,12 +75,12 @@ def components                      = ['CWXTCOB']
 
 node{
 
-    checkPipelineCredentials()
-    extractEnvironmentCredentials()
+    checkPipelineCredentials(gitHubAdminCredentialsPw)
+//    extractEnvironmentCredentials()
 
-    gitHubAdminTokenPlain   = getGitHubAdminTokenPlain
-    gitHubAdminTokenBasic   = getGitHubToken()
-    sonarQubeToken          = getSonarQubeToken()
+    gitHubAdminTokenPlain   = getGitHubAdminTokenPlain(gitHubAdminCredentialsTk)
+    gitHubAdminTokenBasic   = getGitHubAdminTokenBasic(gitHubTokenStore)
+    sonarQubeToken          = getSonarQubeToken(sonarQubeTokenStore)
 
     def sonarProjectName    = environmentSettings[targetEnvironment].sonarProjectName
     def gitHubRepo          = environmentSettings[targetEnvironment].gitHubRepo
@@ -246,12 +246,12 @@ node{
     // }
 }
 
-def checkPipelineCredentials(){
+def checkPipelineCredentials(credentials){
 
     withCredentials(
         [
             usernamePassword(
-                credentialsId:      gitHubAdminCredentialsPw, 
+                credentialsId:      credentials, 
                 passwordVariable:   'gitHubAdminPwTmp', 
                 usernameVariable:   'gitHubAdminUserTmp'
             )
@@ -268,14 +268,14 @@ def checkPipelineCredentials(){
     }
 }
 
-def getGitHubAdminTokenPlain () {
+def getGitHubAdminTokenPlain (credentials) {
 
     def token
 
     withCredentials(
         [
             usernamePassword(
-                credentialsId:      gitHubAdminCredentialsTk, 
+                credentialsId:      credentials, 
                 passwordVariable:   'gitHubAdminTkTmp', 
                 usernameVariable:   'gitHubAdminUserTmp'
             )
@@ -288,7 +288,7 @@ def getGitHubAdminTokenPlain () {
     return token
 }
 
-def getGitHubAdminTokenBasic() {
+def getGitHubAdminTokenBasic(credentials) {
 
     def token = 'Basic'
 
@@ -296,7 +296,7 @@ def getGitHubAdminTokenBasic() {
         [
             string( 
                 [
-                    credentialsId:  gitHubTokenStore, 
+                    credentialsId:  credentials, 
                     variable:       'cpwrgitTokenTmp'
                 ]
             )
@@ -309,7 +309,7 @@ def getGitHubAdminTokenBasic() {
     return token
 }
 
-def getSonarQubeToken() {
+def getSonarQubeToken(credentials) {
 
     def token = 'Basic'
 
@@ -317,7 +317,7 @@ def getSonarQubeToken() {
         [
             string( 
                 [
-                    credentialsId:  sonarQubeTokenStore, 
+                    credentialsId:  credentials, 
                     variable:       'sonarQubeTokenTmp'
                 ]
             )
