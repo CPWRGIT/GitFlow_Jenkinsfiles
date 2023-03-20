@@ -21,7 +21,7 @@ String ispwConfigFile           = "./GenApp_MainframeCore/ispwconfig.yml"
 String projectSettingsFile      = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
 String sonarLintSettingsFile    = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
 
-String sonarServerUrl           = "192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
+String sonarServerUrl           = "http://192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
 String sonarQualityGateId       = "AYb96SGym7XD63sZxcew"
 String sonarQubeTokenStore      = 'SonarQube_Token_Basic'
 String sonarQubeToken           = 'Basic'
