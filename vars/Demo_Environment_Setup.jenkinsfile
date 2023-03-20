@@ -38,7 +38,9 @@ String jenkinsUrl                   = 'http://192.168.96.133:8080'
 String jenkinsGitFlowFolder         = 'GitFlow'
 String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
 String jenkinsJobTemplate           = 'GitFlow_Template'
-String jenkinsJobName               = 'GitFlow_' + ispwApp.subString(ispwApp.length() - 1)
+String jenkinsJobName               = 'GitFlow_' + ispwApp.substring(ispwApp.length() - 1)
+
+echo "Create JobName" + jenkinsJobName
 
 def environmentSettings             = [
         'CWCC': [
