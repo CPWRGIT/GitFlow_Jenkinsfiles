@@ -118,7 +118,7 @@ echo "Token " + gitHubAdminTokenPlain
                 [
                     ['GitFlow_Template', gitHubRepo]
                 ]
-            ]
+            ],
             [jenkinsfile, 
                 [
                     ['<hostCredentials>', hostCredentialsId], 
