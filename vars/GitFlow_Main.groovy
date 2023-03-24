@@ -27,7 +27,7 @@ def call(Map runtimeParms) {
 
             if (assignmentId != null) {
 
-                buildMainframeCode(runtimeParms.hostConnection, runtimeParms.cesCredentialsId)
+                buildMainframeCode(envSettings.hostConnection, runtimeParms.cesCredentialsId)
 
                 runUnitTests(runtimeParms, envSettings)
 
@@ -68,7 +68,7 @@ def call(Map runtimeParms) {
 
             if (releaseAssignmentId != null) {
 
-                buildMainframeCode(runtimeParms.hostConnection, runtimeParms.cesCredentialsId)
+                buildMainframeCode(envSettings.hostConnection, runtimeParms.cesCredentialsId)
 
                 ispwReleaseNumber   = determineIspwReleaseNumber(currentTag)
                 cesToken            = extractToken(runtimeParms.cesCredentialsId)
