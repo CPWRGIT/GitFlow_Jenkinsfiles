@@ -6,7 +6,7 @@ def ispwOwner
 def cesToken
 def xlrReleaseNumber
 
-call(Map runtimeParms) {
+def call(Map runtimeParms) {
     node {
         
         def envSettings                     = [:]
