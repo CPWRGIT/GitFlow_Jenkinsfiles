@@ -5,20 +5,20 @@ def releaseAssignmentId
 def ispwOwner
 def cesToken
 def xlrReleaseNumber
+def envSettings = [:]
 
 def call(Map runtimeParms) {
     node {
         
-        def envSettings                     = [:]
-        envSettings['hostConnection']        '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4'
-        envSettings['ispwStream']            'GITFLOW'
-        envSettings['ispwApplication']       'GFLD'
-        envSettings['automaticBuildFile']    'automaticBuildParams.txt'
-        envSettings['ispwRuntimeConfig']     'ic2ga'
-        envSettings['ispwConfigFile']        './GenApp_MainframeCore/ispwconfig.yml'
-        envSettings['cliPath']               'C:/TopazCLI201301'
-        envSettings['hostName']              'cwc2.bmc.com'
-        envSettings['hostPort']              '16196'
+        envSettings['hostConnection']        = '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4'
+        envSettings['ispwStream']            = 'GITFLOW'
+        envSettings['ispwApplication']       = 'GFLD'
+        envSettings['automaticBuildFile']    = 'automaticBuildParams.txt'
+        envSettings['ispwRuntimeConfig']     = 'ic2ga'
+        envSettings['ispwConfigFile']        = './GenApp_MainframeCore/ispwconfig.yml'
+        envSettings['cliPath']               = 'C:/TopazCLI201301'
+        envSettings['hostName']              = 'cwc2.bmc.com'
+        envSettings['hostPort']              = '16196'
 
         dir('./') {
             deleteDir()
