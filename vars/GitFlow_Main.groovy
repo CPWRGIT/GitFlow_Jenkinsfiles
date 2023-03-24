@@ -1,16 +1,14 @@
-def fromCommit
-def toCommit
-def currentTag
-def releaseAssignmentId
-def ispwOwner
-def cesToken
-def xlrReleaseNumber
-
-
 def call(Map runtimeParms) {
-    
+
+    def fromCommit
+    def toCommit
+    def currentTag
+    def releaseAssignmentId
+    def ispwOwner
+    def cesToken
+    def xlrReleaseNumber
     def envSettings = [:]
-    
+
     node {
         
         envSettings['hostConnection']        = '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4'
