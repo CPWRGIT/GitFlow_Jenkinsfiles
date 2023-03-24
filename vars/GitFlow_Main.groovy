@@ -246,24 +246,22 @@ def buildMainframeCode(hostConnection, cesCredentialsId) {
 
     stage("Mainframe Build") {
 
-        echo "Would run build now"
-
-        // try{
-        //     ispwOperation(
-        //         connectionId:           hostConnection, //'38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4', 
-        //         credentialsId:          cesCredentialsId,       
-        //         consoleLogResponseBody: true, 
-        //         ispwAction:             'BuildTask', 
-        //         ispwRequestBody:        '''
-        //             runtimeConfiguration=ic2ga
-        //             buildautomatically = true
-        //         '''
-        //     )
-        // }
-        // catch(Exception e) {
-        //     echo "[Error] - Error occurred during Build of Mainframe Code: \n" +
-        //         e
-        // }
+        try{
+            ispwOperation(
+                connectionId:           hostConnection, //'38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4', 
+                credentialsId:          cesCredentialsId,       
+                consoleLogResponseBody: true, 
+                ispwAction:             'BuildTask', 
+                ispwRequestBody:        '''
+                    runtimeConfiguration=ic2ga
+                    buildautomatically = true
+                '''
+            )
+        }
+        catch(Exception e) {
+            echo "[Error] - Error occurred during Build of Mainframe Code: \n" +
+                e
+        }
     }
 }
 
