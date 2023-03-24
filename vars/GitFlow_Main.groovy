@@ -1,33 +1,50 @@
 def call(Map runtimeParms) {
 
-    def fromCommit
-    def toCommit
-    def currentTag
-    def releaseAssignmentId
-    def ispwOwner
-    def cesToken
-    def xlrReleaseNumber
     def envSettings = [:]
+    envSettings['hostConnection']        = '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4'
+    envSettings['ispwStream']            = 'GITFLOW'
+    envSettings['ispwApplication']       = 'GFLD'
+    envSettings['automaticBuildFile']    = 'automaticBuildParams.txt'
+    envSettings['ispwRuntimeConfig']     = 'ic2ga'
+    envSettings['ispwConfigFile']        = './GenApp_MainframeCore/ispwconfig.yml'
+    envSettings['cliPath']               = 'C:/TopazCLI201301'
+    envSettings['hostName']              = 'cwc2.bmc.com'
+    envSettings['hostPort']              = '16196'
 
     node {
-        
-        envSettings['hostConnection']        = '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4'
-        envSettings['ispwStream']            = 'GITFLOW'
-        envSettings['ispwApplication']       = 'GFLD'
-        envSettings['automaticBuildFile']    = 'automaticBuildParams.txt'
-        envSettings['ispwRuntimeConfig']     = 'ic2ga'
-        envSettings['ispwConfigFile']        = './GenApp_MainframeCore/ispwconfig.yml'
-        envSettings['cliPath']               = 'C:/TopazCLI201301'
-        envSettings['hostName']              = 'cwc2.bmc.com'
-        envSettings['hostPort']              = '16196'
 
-        dir('./') {
-            deleteDir()
-        }
+        initialize()
 
         cloneRepo(runtimeParms)
 
-        if(BRANCH_NAME.startsWith("release")) {
+        if(BRANCH_NAME.startsWith("feature")) {
+
+            def assignmentId
+
+            loadMainframeCode(Map runtimeParms, Map envSettings)
+
+            assignmentId = getAssignmentId(envSettings.automaticBuildFile)
+
+            if (assignmentId != null) {
+
+                buildMainframeCode(runtimeParms.hostConnection, runtimeParms.cesCredentialsId)
+
+                runUnitTests(runtimeParms, envSettings)
+
+                runIntegrationTests(runtimeParms, envSettings)
+
+                runSonarScan(runtimeParms, envSettings)
+            }
+        }
+        else if(BRANCH_NAME.startsWith("release")) {
+
+            def fromCommit
+            def toCommit
+            def currentTag
+            def assignmentId
+            def ispwOwner
+            def cesToken
+            def xlrReleaseNumber
 
             def hostCreds   = extractCredentials(runtimeParms.hostCredentialsId) 
 
@@ -48,18 +65,26 @@ def call(Map runtimeParms) {
             loadMainframeCode(fromCommit, toCommit, runtimeParms, envSettings)
 
             releaseAssignmentId = getAssignmentId(envSettings.automaticBuildFile)
-            cesToken            = extractToken(runtimeParms.cesCredentialsId)
 
             if (releaseAssignmentId != null) {
 
-                buildMainframeCode(runtimeParms.hostConnection, runtimeParms.cesCredentialsId, envSettings.automaticBuildFile)
+                buildMainframeCode(runtimeParms.hostConnection, runtimeParms.cesCredentialsId)
 
-                ispwReleaseNumber = determineIspwReleaseNumber(currentTag)
+                ispwReleaseNumber   = determineIspwReleaseNumber(currentTag)
+                cesToken            = extractToken(runtimeParms.cesCredentialsId)
 
                 startXlr(ispwReleaseNumber, releaseAssignmentId, cesToken, runtimeParms, envSettings)
             
             }
         }
+    }
+}
+
+def initialize() {
+
+    stage("Imitialization") {
+
+        cleanWs()
     }
 }
 
@@ -145,7 +170,11 @@ def determineCommitInfo() {
     return commitInfo
 }
 
-def loadMainframeCode(fromCommit, toCommit, runtimeParms, envSettings) {
+def loadMainframeCode(Map runtimeParms, Map envSettings) {
+
+}
+
+def loadMainframeCode(String fromCommit, String toCommit, Map runtimeParms, Map envSettings) {
 
     stage("Mainframe Load") {
 
@@ -213,7 +242,7 @@ def getAssignmentId(buildFile) {
     }
 }
 
-def buildMainframeCode(hostConnection, cesCredentialsId, buildFile) {
+def buildMainframeCode(hostConnection, cesCredentialsId) {
 
     stage("Mainframe Build") {
 
@@ -236,6 +265,18 @@ def buildMainframeCode(hostConnection, cesCredentialsId, buildFile) {
         //         e
         // }
     }
+}
+
+def runUnitTests(Map runtimeParms, Map envSettings) {
+    echo "Running Unit Tests"
+}
+
+def runIntegrationTests(Map runtimeParms, Map envSettings) {
+    echo "Running Integration Tests"
+}
+
+def runSonarScan(Map runtimeParms, Map envSettings) {
+    echo "Running Sonar Scan"
 }
 
 def determineIspwReleaseNumber(tag) {
