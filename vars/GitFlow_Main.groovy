@@ -296,45 +296,45 @@ def startXlr(releaseNumber, assignmentId, cesToken, runtimeParms, envSettings) {
     echo 'Jenkins_CES_Credentials: ' + runtimeParms.cesCredentialsId
     echo 'Release Number: ' + releaseNumber
 
-    // xlrCreateRelease(
-    //     releaseTitle:       "GitFlow - Release for ${runtimeParms.hostUser}", 
-    //     serverCredentials:  'admin', 
-    //     startRelease:       true, 
-    //     template:           'GitFlow/GitFlow_Release', 
-    //     variables: [
-    //         [
-    //             propertyName:   'CES_Token', 
-    //             propertyValue:  cesToken
-    //         ], 
-    //         [
-    //             propertyName:   'ISPW_Release_Number', 
-    //             propertyValue:  releaseNumber
-    //         ], 
-    //         [
-    //             propertyName:   'ISPW_Assignment', 
-    //             propertyValue:  assignmentId
-    //         ], 
-    //         [
-    //             propertyName:   'ISPW_Runtime', 
-    //             propertyValue:  envSettings.ispwRuntimeConfig
-    //         ], 
-    //         [
-    //             propertyName:   'ISPW_Application', 
-    //             propertyValue:  envSettings.ispwApplication
-    //         ], 
-    //         [
-    //             propertyName:   'ISPW_Owner', 
-    //             propertyValue:  runtimeParms.hostUser
-    //         ],
-    //         [
-    //             propertyName: 'Jenkins_CES_Credentials', 
-    //             propertyValue: runtimeParms.cesCredentialsId
-    //         ]
-    //         // ,
-    //         // [
-    //         //     propertyName: 'Jenkins_Git_Credentials', 
-    //         //     propertyValue: pipelineParms.gitCredentialsId
-    //         // ] 
-    //     ]
-    // )    
+    xlrCreateRelease(
+        releaseTitle:       "GitFlow - Release for ${runtimeParms.hostUser}", 
+        serverCredentials:  'admin', 
+        startRelease:       true, 
+        template:           'GitFlow/GitFlow_Release', 
+        variables: [
+            [
+                propertyName:   'CES_Token', 
+                propertyValue:  cesToken
+            ], 
+            [
+                propertyName:   'ISPW_Release_Number', 
+                propertyValue:  releaseNumber
+            ], 
+            [
+                propertyName:   'ISPW_Assignment', 
+                propertyValue:  assignmentId
+            ], 
+            [
+                propertyName:   'ISPW_Runtime', 
+                propertyValue:  envSettings.ispwRuntimeConfig
+            ], 
+            [
+                propertyName:   'ISPW_Application', 
+                propertyValue:  envSettings.ispwApplication
+            ], 
+            [
+                propertyName:   'ISPW_Owner', 
+                propertyValue:  runtimeParms.hostUser
+            ],
+            [
+                propertyName: 'Jenkins_CES_Credentials', 
+                propertyValue: runtimeParms.cesCredentialsId
+            ]
+            // ,
+            // [
+            //     propertyName: 'Jenkins_Git_Credentials', 
+            //     propertyValue: pipelineParms.gitCredentialsId
+            // ] 
+        ]
+    )    
 }
