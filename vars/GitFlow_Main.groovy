@@ -19,11 +19,11 @@ def call(Map runtimeParms) {
 
         if(BRANCH_NAME.startsWith("feature")) {
 
-            def assignmentId
+            def assignmentId = 'GFLD0000001'
 
-            loadMainframeCode(Map runtimeParms, Map envSettings)
+            loadMainframeCode(runtimeParms, envSettings)
 
-            assignmentId = getAssignmentId(envSettings.automaticBuildFile)
+            //assignmentId = getAssignmentId(envSettings.automaticBuildFile)
 
             if (assignmentId != null) {
 
@@ -171,7 +171,7 @@ def determineCommitInfo() {
 }
 
 def loadMainframeCode(Map runtimeParms, Map envSettings) {
-
+    echo "Load Feature Code"
 }
 
 def loadMainframeCode(String fromCommit, String toCommit, Map runtimeParms, Map envSettings) {
