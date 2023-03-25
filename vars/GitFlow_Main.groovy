@@ -73,21 +73,22 @@ def initializeSettings(configFile, parms) {
 
     def settings = [:]
 
-    settings.demoEnvironment    = parms.demoEnvironment
-    settings.hci.credentialsId  = parms.hostCredentialsId
-    settings.ces.credentialsId  = parms.cesCredentialsId
-    settings.git.repoUrl        = parms.gitRepoUrl
-    settings.git.credentialsId  = parms.gitCredentialsId
-    settings.coco.repo          = parms.ccRepo
-
     stage("Imitialization") {
 
         cleanWs()
 
-        def tmpSettings = readYaml(text: libraryResource(configFile))
-        settings        = tmpSetting.executionEnvironments[settings.demoEnvironment]
-        settings        = addFolderNames(settings)
-        settings        = addCoCoParms(settings)
+        def tmpSettings             = readYaml(text: libraryResource(configFile))
+        settings                    = tmpSetting.executionEnvironments[settings.demoEnvironment]
+        settings                    = addFolderNames(settings)
+        settings                    = addCoCoParms(settings)
+
+        settings.demoEnvironment    = parms.demoEnvironment
+        settings.hci.credentialsId  = parms.hostCredentialsId
+        settings.ces.credentialsId  = parms.cesCredentialsId
+        settings.git.repoUrl        = parms.gitRepoUrl
+        settings.git.credentialsId  = parms.gitCredentialsId
+        settings.coco.repo          = parms.ccRepo
+
     }
 
     return settings
