@@ -49,7 +49,7 @@ def call(Map parms) {
 
             settings = extendSettings(settings)
 
-            loadMainframeCode(fromCommit, toCommit, settings)
+            loadMainframeCode(settings.fromCommit, settings.toCommit, settings)
 
             releaseAssignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
 
