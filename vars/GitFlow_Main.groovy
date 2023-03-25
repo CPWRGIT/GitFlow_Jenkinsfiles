@@ -71,7 +71,7 @@ def call(Map parms) {
 
 def initializeSettings(configFile, parms) {
 
-    def settings
+    def settings = [:]
 
     settings.demoEnvironment    = parms.demoEnvironment
     settings.hci.credentialsId  = parms.hostCredentialsId
