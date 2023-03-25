@@ -430,7 +430,7 @@ def runIntegrationTests(Map settings) {
             //                                     ',nvt_ispw_level4=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level4 + 
             //                                     '"',                
             collectCodeCoverage:                true,
-            collectCCRepository:                settings..coc.repo,
+            collectCCRepository:                settings.coco.repo,
             collectCCSystem:                    settings.coco.systemId,
             collectCCTestID:                    settings.coco.testId,
             clearCodeCoverage:                  false,
