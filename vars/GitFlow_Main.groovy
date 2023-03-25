@@ -96,8 +96,7 @@ def initializeSettings(configFile, parms) {
 }
 
 def addFolderNames(settings) {
-echo "Settings before Folders"
-echo settings.toString()
+
     settings.ispw.configFile        = settings.ispw.configFile.folder           + '/' + settings.ispw.configFile.name
     settings.ttt.rootFolder         = settings.ispw.mfProject.rootFolder        + '/' + settings.ttt.folders.root
     settings.ttt.vtFolder           = settings.ttt.rootFolder                   + '/' + settings.ttt.folders.virtualizedTests
@@ -113,15 +112,13 @@ echo settings.toString()
     settings.jUnit                  = [:]
     settings.jUnit.resultsFile      = settings.ttt.results.jUnit.folder         + '/' + settings.ttt.results.jUnit.file
 
-echo "Settings after Folders"
-echo settings.toString()
-
     return settings
 }
 
 def addIspwConfigFileContent(settings)  {
 echo "Settings before"
-echo settings.toString()
+echo settings.ispw.toString()
+echo settings.ipsw.toString()
     def tmpText     = readFile(file: settings.ipsw.configFile)
 echo "Temp Text"
 echo tmpText.toString()
