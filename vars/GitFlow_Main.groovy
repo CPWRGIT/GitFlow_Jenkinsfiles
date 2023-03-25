@@ -18,25 +18,25 @@ def call(Map parms) {
 
         settings     = initializeEnvSettings(configFile, parms)
 
-        cloneRepo(runtimeParms)
+        cloneRepo(settings)
 
         if(BRANCH_NAME.startsWith("feature")) {
 
             def assignmentId = 'GFLD0000001'
 
-            loadMainframeCode(runtimeParms, envSettings)
+            loadMainframeCode(settings)
 
             //assignmentId = getAssignmentId(envSettings.automaticBuildFile)
 
             if (assignmentId != null) {
 
-                buildMainframeCode(envSettings.hostConnection, runtimeParms.cesCredentialsId)
+                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId)
 
-                runUnitTests(runtimeParms, envSettings)
+                runUnitTests(settings)
 
-                runIntegrationTests(runtimeParms, envSettings)
+                runIntegrationTests(settings)
 
-                runSonarScan(runtimeParms, envSettings)
+                runSonarScan(settings)
             }
         }
         else if(BRANCH_NAME.startsWith("release")) {
@@ -45,26 +45,26 @@ def call(Map parms) {
             def cesToken
             def xlrReleaseNumber
 
-            runtimeParms = extendRuntimeParms(runtimeParms)
+            settings = extendRuntimeParms(settings)
 
-            loadMainframeCode(fromCommit, toCommit, runtimeParms, envSettings)
+            loadMainframeCode(fromCommit, toCommit, settings)
 
-            releaseAssignmentId = getAssignmentId(envSettings.automaticBuildFile)
+            releaseAssignmentId = getAssignmentId(settings.automaticBuildFile)
 
             if (releaseAssignmentId != null) {
 
-                buildMainframeCode(envSettings.hostConnection, runtimeParms.cesCredentialsId)
+                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
 
-                ispwReleaseNumber   = determineIspwReleaseNumber(currentTag)
-                cesToken            = extractToken(runtimeParms.cesCredentialsId)
+                ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
+                cesToken            = extractToken(settings.ces.credentialsId)
 
-                startXlr(ispwReleaseNumber, releaseAssignmentId, cesToken, runtimeParms, envSettings)
+                startXlr(ispwReleaseNumber, releaseAssignmentId, cesToken, settings)
             
             }
         }
         else {
 
-            runSonarScan(runtimeParms, encSettings)
+            runSonarScan(settings)
         }
     }
 }
@@ -147,27 +147,25 @@ def addCoCoParms(settings) {
     return settings
 }
 
-def extendRuntimeParms(parms) {
+def extendRuntimeParms(settings) {
 
-    def hostCreds       = extractCredentials(parms.hostCredentialsId) 
-    parms.hostUser      = hostCreds[0]
-    parms.hostPassword  = hostCreds[1]
+    def hostCreds           = extractCredentials(settings.hci.credentialsId) 
+    settings.hci.user       = hostCreds[0]
+    settings.hci.password   = hostCreds[1]
 
-    def gitCreds        = extractCredentials(parms.gitCredentialsId)
+    def gitCreds            = extractCredentials(settings.git.credentialsId)
+    settings.git.user       = gitCreds[0]
+    settings.git.password   = gitCreds[1]
 
-    parms.gitUser       = gitCreds[0]
-    parms.gitPassword   = gitCreds[1]
+    def commitInfo          = determineCommitInfo()
+    settings.fromCommit    = commitInfo['fromCommit']
+    settings.toCommit      = commitInfo['toCommit']
+    settings.currentTag    = commitInfo['currentTag']
 
-    def commitInfo      = determineCommitInfo()
-
-    parms.fromCommit    = commitInfo['fromCommit']
-    parms.toCommit      = commitInfo['toCommit']
-    parms.currentTag    = commitInfo['currentTag']
-
-    return parms
+    return settings
 }
 
-def cloneRepo(runtimeParms) {
+def cloneRepo(settings) {
 
     stage ('Checkout') {
         // checkout scm
@@ -249,56 +247,54 @@ def determineCommitInfo() {
     return commitInfo
 }
 
-def loadMainframeCode(Map runtimeParms, Map envSettings) {
-    echo "Load Feature Code"
+def loadMainframeCode(Map settings) {
+
+    gitToIspwIntegration( 
+        connectionId:       settings.hci.connectionId,
+        credentialsId:      settings.hci.credentialsId,
+        runtimeConfig:      settings.ispw.runtimeConfig,
+        stream:             settings.ispw.stream,
+        app:                settings.ispw.application, 
+        branchMapping:      'feature/** => FEAT,per-branch',
+        ispwConfigPath:     settings.ispw.ispwConfigFile,
+        gitCredentialsId:   settings.git.credentialsId,
+        gitRepoUrl:         setting.git.repoUrl
+    )
 }
 
-def loadMainframeCode(String fromCommit, String toCommit, Map runtimeParms, Map envSettings) {
+def loadMainframeCode(String fromCommit, String toCommit, Map settings) {
 
     stage("Mainframe Load") {
 
         def output = bat(
             returnStdout: true,
-            script: envSettings.cliPath + '/IspwCLI.bat ' +  
+            script: settings.jenkins.cliPath + '/IspwCLI.bat ' +  
                 '-operation syncGitToIspw ' + 
-                '-host "' + envSettings.hostName + '" ' +
+                '-host "' + settings.hci.hostName + '" ' +
                 '-port "' + envSettings.hostPort + '" ' +
-                '-id "' + runtimeParms.hostUser + '" ' +
-                '-pass "' + runtimeParms.hostPassword + '" ' +
+                '-id "' + settings.hci.user + '" ' +
+                '-pass "' + settings.hci.assword + '" ' +
                 '-protocol None ' +
                 '-code 1047 ' +
                 '-timeout "0" ' +
                 '-targetFolder ./ ' +
                 '-data ./TopazCliWkspc ' +
-                '-ispwServerConfig ' + envSettings.ispwRuntimeConfig + ' ' +
-                '-ispwServerStream ' + envSettings.ispwStream + ' ' +
-                '-ispwServerApp ' + envSettings.ispwApplication + ' ' +
+                '-ispwServerConfig ' + settings.ispw.runtimeConfig + ' ' +
+                '-ispwServerStream ' + settings.ispw.stream + ' ' +
+                '-ispwServerApp ' + settings.ispw.application + ' ' +
                 '-ispwCheckoutLevel RLSE ' +
-                '-ispwConfigPath ' + envSettings.ispwConfigFile + ' ' +
+                '-ispwConfigPath ' + settings.ispw.configFile + ' ' +
                 '-ispwContainerCreation per-branch ' +
-                '-gitUsername "' + runtimeParms.gitUser + '" ' +
-                '-gitPassword "' + runtimeParms.gitPassword + '" ' +
-                '-gitRepoUrl "' + runtimeParms.gitRepoUrl + '" ' +
+                '-gitUsername "' + settings.git.user + '" ' +
+                '-gitPassword "' + settings.git.password + '" ' +
+                '-gitRepoUrl "' + settings.git.repoUrl + '" ' +
                 '-gitBranch ' + BRANCH_NAME + ' ' +
-                '-gitFromHash ' + fromCommit + ' ' +
+                '-gitFromHash ' + settings.fromCommit + ' ' +
                 '-gitLocalPath ./ ' +
-                '-gitCommit ' + toCommit
+                '-gitCommit ' + settings.toCommit
         )
 
         echo output
-
-    //     gitToIspwIntegration( 
-    //         connectionId:       'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756', //synchConfig.environment.hci.connectionId,                    
-    //         credentialsId:      'ea48408b-b2be-4810-8f4e-5b5f35977eb1', //pipelineParms.hostCredentialsId,                     
-    //         runtimeConfig:      'iccga', //ispwConfig.ispwApplication.runtimeConfig,
-    //         stream:             'GITFLOW', //ispwConfig.ispwApplication.stream,
-    //         app:                'GITFLOWE', //ispwConfig.ispwApplication.application, 
-    //         branchMapping:      'release/** => RLSE,per-branch', //branchMappingString,
-    //         ispwConfigPath:     './GenApp_MainframeCore/ispwconfig.yml', //ispwConfigFile, 
-    //         gitCredentialsId:   '67a3fb18-073f-498b-adee-1a3c75192745', //pipelineParms.gitCredentialsId, 
-    //         gitRepoUrl:         'https://github.com/CPWRGIT/GitFlow_HDDRXM0.git' //pipelineParms.gitRepoUrl
-    //     )
-
     }
 }
 
@@ -332,7 +328,7 @@ def buildMainframeCode(hostConnection, cesCredentialsId) {
                 consoleLogResponseBody: true, 
                 ispwAction:             'BuildTask', 
                 ispwRequestBody:        '''
-                    runtimeConfiguration=ic2ga
+                    runtimeConfiguration=''' + runtimeConfig + '''
                     buildautomatically = true
                 '''
             )
@@ -344,22 +340,22 @@ def buildMainframeCode(hostConnection, cesCredentialsId) {
     }
 }
 
-def runUnitTests(Map runtimeParms, Map envSettings) {
+def runUnitTests(settings) {
 
     stage("Run Unit Test") {
 
         echo "[Info] - Execute Unit Tests."
 
         totaltest(
-            serverUrl:                          envSettings.ces.url, 
-            serverCredentialsId:                runtimeParms.hostCredentialsId, 
-            credentialsId:                      runtimeParms.hostCredentialsId, 
-            environmentId:                      envSettings.ttt.environmentIds.virtualized,
+            serverUrl:                          settings.ces.url, 
+            serverCredentialsId:                settings.hci.credentialsId, 
+            credentialsId:                      settings.hci.credentialsId, 
+            environmentId:                      settings.ttt.environmentIds.virtualized,
             localConfig:                        false, 
-            folderPath:                         envSettings.ttt.vtFolder, 
+            folderPath:                         settings.ttt.vtFolder, 
             recursive:                          true, 
             selectProgramsOption:               true, 
-            jsonFile:                           envSettings.ispw.changedProgramsFile,
+            jsonFile:                           settings.ispw.changedProgramsFile,
             haltPipelineOnFailure:              false,                 
             stopIfTestFailsOrThresholdReached:  false,
             createJUnitReport:                  true, 
@@ -368,9 +364,9 @@ def runUnitTests(Map runtimeParms, Map envSettings) {
             createSonarReport:                  true,
             contextVariables:                   '"ispw_app=' + envSettings.ispw.appQualifier + ',ispw_level=FEAT"',
             collectCodeCoverage:                true,
-            collectCCRepository:                runtimeParms.ccRepo,
-            collectCCSystem:                    envSettings.coco.systemId,
-            collectCCTestID:                    envSettings.coco.testId,
+            collectCCRepository:                settings.coco.repo,
+            collectCCSystem:                    settings.coco.systemId,
+            collectCCTestID:                    settings.coco.testId,
             clearCodeCoverage:                  false,
             logLevel:                           'INFO'
         )
@@ -394,15 +390,15 @@ def runIntegrationTests(Map runtimeParms, Map envSettings) {
 
         totaltest(
             connectionId:                       settings.hci.connectionId,
-            credentialsId:                      runtimeParms.hostCredentialsId,             
+            credentialsId:                      settings.hci.credentialsId,             
             serverUrl:                          settings.ces.url, 
-            serverCredentialsId:                runtimeParms.hostCredentialsId, 
+            serverCredentialsId:                settings.hci.credentialsId, 
             environmentId:                      envId, 
             localConfig:                        false,
-            folderPath:                         envSettings.ttt.nvtFolder, 
+            folderPath:                         settings.ttt.nvtFolder, 
             recursive:                          true, 
             selectProgramsOption:               true, 
-            jsonFile:                           envSettings.ispw.changedProgramsFile,
+            jsonFile:                           settings.ispw.changedProgramsFile,
             haltPipelineOnFailure:              false,                 
             stopIfTestFailsOrThresholdReached:  false,
             createJUnitReport:                  true, 
@@ -416,16 +412,16 @@ def runIntegrationTests(Map runtimeParms, Map envSettings) {
             //                                     ',nvt_ispw_level4=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level4 + 
             //                                     '"',                
             collectCodeCoverage:                true,
-            collectCCRepository:                runtimeParms.ccRepo,
-            collectCCSystem:                    envSettings.coco.systemId,
-            collectCCTestID:                    envSettings.coco.testId,
+            collectCCRepository:                settings..coc.repo,
+            collectCCSystem:                    settings.coco.systemId,
+            collectCCTestID:                    settings.coco.testId,
             clearCodeCoverage:                  false,
             logLevel:                           'INFO'
         )
     }
 }
 
-def runSonarScan(Map runtimeParms, Map envSettings) {
+def runSonarScan(Map settings) {
     echo "Running Sonar Scan"
 }
 
@@ -437,19 +433,19 @@ def determineIspwReleaseNumber(tag) {
     return releaseNumberParts[0] + releaseNumberParts[1] + releaseNumberParts[2]
 }
 
-def startXlr(releaseNumber, assignmentId, cesToken, runtimeParms, envSettings) {
+def startXlr(releaseNumber, assignmentId, cesToken, settings) {
 
     echo "Start XLR with: "
     echo 'CES_Token: ' + cesToken
-    echo 'ISPW_Runtime: ' + envSettings.ispwRuntimeConfig
-    echo 'ISPW_Application: ' + envSettings.ispwApplication
-    echo 'ISPW_Owner: ' + runtimeParms.hostUser
+    echo 'ISPW_Runtime: ' + settings.ispw.runtimeConfig
+    echo 'ISPW_Application: ' + settings.ispw.application
+    echo 'ISPW_Owner: ' + settings.hci.user
     echo 'ISPW_Assignment: ' + assignmentId
-    echo 'Jenkins_CES_Credentials: ' + runtimeParms.cesCredentialsId
+    echo 'Jenkins_CES_Credentials: ' + settings.ces.credentialsId
     echo 'Release Number: ' + releaseNumber
 
     xlrCreateRelease(
-        releaseTitle:       "GitFlow - Release for ${runtimeParms.hostUser}", 
+        releaseTitle:       "GitFlow - Release for ${settings.hci.user}", 
         serverCredentials:  'admin', 
         startRelease:       true, 
         template:           'GitFlow/GitFlow_Release', 
@@ -468,19 +464,19 @@ def startXlr(releaseNumber, assignmentId, cesToken, runtimeParms, envSettings) {
             ], 
             [
                 propertyName:   'ISPW_Runtime', 
-                propertyValue:  envSettings.ispwRuntimeConfig
+                propertyValue:  settings.ispw.runtimeConfig
             ], 
             [
                 propertyName:   'ISPW_Application', 
-                propertyValue:  envSettings.ispwApplication
+                propertyValue:  settings.ispw.application
             ], 
             [
                 propertyName:   'ISPW_Owner', 
-                propertyValue:  runtimeParms.hostUser
+                propertyValue:  settings.hci.user
             ],
             [
                 propertyName: 'Jenkins_CES_Credentials', 
-                propertyValue: runtimeParms.cesCredentialsId
+                propertyValue: settings.ces.credentialsId
             ]
             // ,
             // [
