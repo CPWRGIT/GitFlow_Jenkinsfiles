@@ -28,7 +28,7 @@ def call(Map parms) {
 
             loadMainframeCode(settings)
 
-            assignmentId = getAssignmentId(settings.automaticBuildFile)
+            assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
 
             if (assignmentId != null) {
 
@@ -51,7 +51,7 @@ def call(Map parms) {
 
             loadMainframeCode(fromCommit, toCommit, settings)
 
-            releaseAssignmentId = getAssignmentId(settings.automaticBuildFile)
+            releaseAssignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
 
             if (releaseAssignmentId != null) {
 
