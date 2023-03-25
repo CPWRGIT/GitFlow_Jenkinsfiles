@@ -291,7 +291,7 @@ def loadMainframeCode(String fromCommit, String toCommit, Map settings) {
                 '-host "' + settings.hci.hostName + '" ' +
                 '-port "' + settings.hci.hostPort + '" ' +
                 '-id "' + settings.hci.user + '" ' +
-                '-pass "' + settings.hci.assword + '" ' +
+                '-pass "' + settings.hci.password + '" ' +
                 '-protocol None ' +
                 '-code 1047 ' +
                 '-timeout "0" ' +
