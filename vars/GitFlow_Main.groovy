@@ -71,6 +71,12 @@ def call(Map parms) {
 
 def initializeSettings(configFile, parms) {
 
+echo "File"
+echo configFile
+
+echo "Parms"
+echo parms.toString()
+
     def settings = [:]
 
     stage("Imitialization") {
@@ -78,6 +84,9 @@ def initializeSettings(configFile, parms) {
         cleanWs()
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
+
+echo "Temp Settings"
+echo tmpSettings.toString()
         settings                    = tmpSettings.executionEnvironments[settings.demoEnvironment]
 
 echo "Settings: "
