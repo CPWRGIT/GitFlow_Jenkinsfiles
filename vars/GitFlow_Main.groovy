@@ -71,12 +71,6 @@ def call(Map parms) {
 
 def initializeSettings(configFile, parms) {
 
-echo "File"
-echo configFile
-
-echo "Parms"
-echo parms.toString()
-
     def settings = [:]
 
     stage("Imitialization") {
@@ -84,14 +78,7 @@ echo parms.toString()
         cleanWs()
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
-
-echo "Temp Settings"
-echo tmpSettings.toString()
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
-
-echo "Settings: "
-echo settings.toString()
-
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
 
@@ -101,7 +88,6 @@ echo settings.toString()
         settings.git.repoUrl        = parms.gitRepoUrl
         settings.git.credentialsId  = parms.gitCredentialsId
         settings.coco.repo          = parms.ccRepo
-
     }
 
     return settings
@@ -112,7 +98,7 @@ def addFolderNames(settings) {
     settings.ispw.configFile        = settings.ispw.configFile.folder           + '/' + settings.ispw.configFile.name
     settings.ttt.rootFolder         = settings.ispw.mfProject.rootFolder        + '/' + settings.ttt.folders.root
     settings.ttt.vtFolder           = settings.ttt.rootFolder                   + '/' + settings.ttt.folders.virtualizedTests
-    settings.ttt.nvtFolder          = settings.ttt.rootFolder                   + '/' + synchConfig.ttt.folders.nonVirtualizedTests
+    settings.ttt.nvtFolder          = settings.ttt.rootFolder                   + '/' + settings.ttt.folders.nonVirtualizedTests
     settings.coco.sources           = settings.ispw.mfProject.rootFolder        +       settings.ispw.mfProject.sourcesFolder
     settings.sonar.cobolFolder      = settings.ispw.mfProject.rootFolder        +       settings.ispw.mfProject.sourcesFolder
     settings.sonar.copybookFolder   = settings.ispw.mfProject.rootFolder        +       settings.ispw.mfProject.sourcesFolder
@@ -121,7 +107,7 @@ def addFolderNames(settings) {
     settings.sonar.resultsFileNvt   = settings.ttt.folders.nonVirtualizedTests  + '.' + settings.ttt.results.sonar.fileNameBase
     settings.sonar.resultsFileList  = []        
     settings.sonar.codeCoverageFile = settings.coco.results.sonar.folder        + '/' + settings.coco.results.sonar.file
-    settings.jUnitResultsFile       = synchConfig.ttt.results.jUnit.folder      + '/' + synchConfig.ttt.results.jUnit.file
+    settings.jUnitResultsFile       = settings.ttt.results.jUnit.folder      + '/' + settings.ttt.results.jUnit.file
 
     return settings
 }
