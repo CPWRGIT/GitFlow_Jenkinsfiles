@@ -28,7 +28,7 @@ def call(Map parms) {
 
             loadMainframeCode(settings)
 
-            //assignmentId = getAssignmentId(envSettings.automaticBuildFile)
+            //assignmentId = getAssignmentId(settings.automaticBuildFile)
 
             if (assignmentId != null) {
 
@@ -274,7 +274,7 @@ def loadMainframeCode(String fromCommit, String toCommit, Map settings) {
             script: settings.jenkins.cliPath + '/IspwCLI.bat ' +  
                 '-operation syncGitToIspw ' + 
                 '-host "' + settings.hci.hostName + '" ' +
-                '-port "' + envSettings.hostPort + '" ' +
+                '-port "' + settings.hci.hostPort + '" ' +
                 '-id "' + settings.hci.user + '" ' +
                 '-pass "' + settings.hci.assword + '" ' +
                 '-protocol None ' +
@@ -365,7 +365,7 @@ def runUnitTests(Map settings) {
             createReport:                       true, 
             createResult:                       true, 
             createSonarReport:                  true,
-            contextVariables:                   '"ispw_app=' + envSettings.ispw.appQualifier + ',ispw_level=FEAT"',
+            contextVariables:                   '"ispw_app=' + settings.ispw.appQualifier + ',ispw_level=FEAT"',
             collectCodeCoverage:                true,
             collectCCRepository:                settings.coco.repo,
             collectCCSystem:                    settings.coco.systemId,
@@ -377,7 +377,7 @@ def runUnitTests(Map settings) {
         junit(
             allowEmptyResults:  true, 
             keepLongStdio:      true, 
-            testResults:        envSettings.ttt.results.jUnit.folder + '/*.xml'
+            testResults:        settings.ttt.results.jUnit.folder + '/*.xml'
         )
     }
 }
@@ -386,7 +386,7 @@ def runIntegrationTests(Map settings) {
 
     echo "[Info] - Execute Module Integration Tests."
 
-    envSettings.ttt.environmentIds.nonVirtualized.each {
+    settings.ttt.environmentIds.nonVirtualized.each {
 
         def envType     = it.key
         def envId       = it.value
