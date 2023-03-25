@@ -87,7 +87,7 @@ echo parms.toString()
 
 echo "Temp Settings"
 echo tmpSettings.toString()
-        settings                    = tmpSettings.executionEnvironments[settings.demoEnvironment]
+        settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
 
 echo "Settings: "
 echo settings.toString()
