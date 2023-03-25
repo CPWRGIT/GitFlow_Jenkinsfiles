@@ -85,6 +85,7 @@ def initializeSettings(configFile, parms) {
         settings.demoEnvironment    = parms.demoEnvironment
         settings.hci.credentialsId  = parms.hostCredentialsId
         settings.ces.credentialsId  = parms.cesCredentialsId
+        settings.git                = [:]
         settings.git.repoUrl        = parms.gitRepoUrl
         settings.git.credentialsId  = parms.gitCredentialsId
         settings.coco.repo          = parms.ccRepo
