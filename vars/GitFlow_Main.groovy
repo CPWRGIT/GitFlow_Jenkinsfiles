@@ -1,19 +1,22 @@
-def call(Map runtimeParms) {
+#!/usr/bin/env groovy
+import hudson.model.*
+import hudson.EnvVars
+import java.net.URL
+import groovy.xml.*
 
-    def envSettings = [:]
-    envSettings['hostConnection']        = '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4'
-    envSettings['ispwStream']            = 'GITFLOW'
-    envSettings['ispwApplication']       = 'GFLD'
-    envSettings['automaticBuildFile']    = 'automaticBuildParams.txt'
-    envSettings['ispwRuntimeConfig']     = 'ic2ga'
-    envSettings['ispwConfigFile']        = './GenApp_MainframeCore/ispwconfig.yml'
-    envSettings['cliPath']               = 'C:/TopazCLI201301'
-    envSettings['hostName']              = 'cwc2.bmc.com'
-    envSettings['hostPort']              = '16196'
+def execParms
+def configFile
+
+def call(Map parms) {
+
+    parms.demoEnvironment   = parmsarms.demoEnvironment.toLowerCase()
+    configFile              = './config/gitflow.yml'    
+
+    def settings = [:]
 
     node {
 
-        initialize()
+        settings     = initializeEnvSettings(configFile, parms)
 
         cloneRepo(runtimeParms)
 
@@ -38,29 +41,11 @@ def call(Map runtimeParms) {
         }
         else if(BRANCH_NAME.startsWith("release")) {
 
-            def fromCommit
-            def toCommit
-            def currentTag
-            def assignmentId
-            def ispwOwner
+            def releaseAssignmentId
             def cesToken
             def xlrReleaseNumber
 
-            def hostCreds   = extractCredentials(runtimeParms.hostCredentialsId) 
-
-            runtimeParms['hostUser']        = hostCreds[0]
-            runtimeParms['hostPassword']    = hostCreds[1]
-
-            def gitCreds    = extractCredentials(runtimeParms.gitCredentialsId)
-
-            runtimeParms['gitUser']         = gitCreds[0]
-            runtimeParms['gitPassword']     = gitCreds[1]
-
-            def commitInfo  = determineCommitInfo()
-
-            fromCommit  = commitInfo['fromCommit']
-            toCommit    = commitInfo['toCommit']
-            currentTag  = commitInfo['currentTag']
+            runtimeParms = extendRuntimeParms(runtimeParms)
 
             loadMainframeCode(fromCommit, toCommit, runtimeParms, envSettings)
 
@@ -77,15 +62,109 @@ def call(Map runtimeParms) {
             
             }
         }
+        else {
+
+            runSonarScan(runtimeParms, encSettings)
+        }
     }
 }
 
-def initialize() {
+def initialize(configFile, parms) {
+
+    def settings
+
+    settings.demoEnvironment    = parms.demoEnvironment
+    settings.hci.credentialsId  = parms.hostCredentialsId
+    settings.ces.credentialsId  = parms.cesCredentialsId
+    settings.git.repoUrl        = parms.gitRepoUrl
+    settings.git.credentialsId  = parms.gitCredentialsId
+    settings.coco.repo          = parms.ccRepo
 
     stage("Imitialization") {
 
         cleanWs()
+
+        def tmpSettings = readYaml(text: libraryResource(configFile))
+        settings        = tmpSetting.executionEnvironments[settings.demoEnvironment]
+        settings        = addFolderNames(settings)
+        settings        = addCoCoParms(settings)
     }
+
+    return settings
+}
+
+def addFolderNames(settings) {
+
+    settings.ispw.configFile        = settings.ispw.configFile.folder           + '/' + settings.ispw.configFile.name
+    settings.ttt.rootFolder         = settings.ispw.mfProject.rootFolder        + '/' + settings.ttt.folders.root
+    settings.ttt.vtFolder           = settings.ttt.rootFolder                   + '/' + settings.ttt.folders.virtualizedTests
+    settings.ttt.nvtFolder          = settings.ttt.rootFolder                   + '/' + synchConfig.ttt.folders.nonVirtualizedTests
+    settings.coco.sources           = settings.ispw.mfProject.rootFolder        +       settings.ispw.mfProject.sourcesFolder
+    settings.sonar.cobolFolder      = settings.ispw.mfProject.rootFolder        +       settings.ispw.mfProject.sourcesFolder
+    settings.sonar.copybookFolder   = settings.ispw.mfProject.rootFolder        +       settings.ispw.mfProject.sourcesFolder
+    settings.sonar.resultsFolder    = settings.ttt.results.sonar.folder 
+    settings.sonar.resultsFileVt    = settings.ttt.folders.virtualizedTests     + '.' + settings.ttt.results.sonar.fileNameBase
+    settings.sonar.resultsFileNvt   = settings.ttt.folders.nonVirtualizedTests  + '.' + settings.ttt.results.sonar.fileNameBase
+    settings.sonar.resultsFileList  = []        
+    settings.sonar.codeCoverageFile = settings.coco.results.sonar.folder        + '/' + settings.coco.results.sonar.file
+    settings.jUnitResultsFile       = synchConfig.ttt.results.jUnit.folder      + '/' + synchConfig.ttt.results.jUnit.file
+
+    return settings
+}
+
+def addIspwConfigFileContent(settings)  {
+    
+    def tmpText     = readFile(file: settings.ipsw.configFile)
+
+    // remove the first line (i.e. use the the substring following the first carriage return '\n')
+    tmpText         = tmpText.substring(tmpText.indexOf('\n') + 1)
+    def ispwConfig  = readYaml(text: tmpText).ispwApplication
+
+    settings.ispw.runtimeConfig = ispwConfig.runtimeConfig
+    settings.ispw.stream        = ispwCOnfig.stream
+    settings.ispw.application   = ispwConfig.application
+    settings.ispw.appQualifier  = settings.ispw.libraryQualifier    + ispwConfig.ispwApplication.application
+
+    return settings
+}
+
+def addCoCoParms(settings) {
+
+    def ccSystemId
+    def CC_SYSTEM_ID_MAX_LEN    = 15
+    def CC_TEST_ID_MAX_LEN      = 15
+
+    if(BRANCH_NAME.length() > CC_SYSTEM_ID_MAX_LEN) {
+        ccSystemId  = BRANCH_NAME.substring(BRANCH_NAME.length() - CC_SYSTEM_ID_MAX_LEN)
+    }
+    else {
+        ccSystemId  = executionBranch
+    }
+    
+    settings.coco.systemId  = ccSystemId
+    settings.coco.testId    = ccTestId    = BUILD_NUMBER
+
+    return settings
+}
+
+def extendRuntimeParms(parms) {
+
+    def hostCreds       = extractCredentials(parms.hostCredentialsId) 
+    parms.hostUser      = hostCreds[0]
+    parms.hostPassword  = hostCreds[1]
+
+    def gitCreds        = extractCredentials(parms.gitCredentialsId)
+
+    parms.gitUser       = gitCreds[0]
+    parms.gitPassword   = gitCreds[1]
+
+    def commitInfo      = determineCommitInfo()
+
+    parms.fromCommit    = commitInfo['fromCommit']
+    parms.toCommit      = commitInfo['toCommit']
+    parms.currentTag    = commitInfo['currentTag']
+
+    return parms
 }
 
 def cloneRepo(runtimeParms) {
@@ -266,11 +345,84 @@ def buildMainframeCode(hostConnection, cesCredentialsId) {
 }
 
 def runUnitTests(Map runtimeParms, Map envSettings) {
-    echo "Running Unit Tests"
+
+    stage("Run Unit Test") {
+
+        echo "[Info] - Execute Unit Tests."
+
+        totaltest(
+            serverUrl:                          envSettings.ces.url, 
+            serverCredentialsId:                runtimeParms.hostCredentialsId, 
+            credentialsId:                      runtimeParms.hostCredentialsId, 
+            environmentId:                      envSettings.ttt.environmentIds.virtualized,
+            localConfig:                        false, 
+            folderPath:                         envSettings.ttt.vtFolder, 
+            recursive:                          true, 
+            selectProgramsOption:               true, 
+            jsonFile:                           envSettings.ispw.changedProgramsFile,
+            haltPipelineOnFailure:              false,                 
+            stopIfTestFailsOrThresholdReached:  false,
+            createJUnitReport:                  true, 
+            createReport:                       true, 
+            createResult:                       true, 
+            createSonarReport:                  true,
+            contextVariables:                   '"ispw_app=' + envSettings.ispw.appQualifier + ',ispw_level=FEAT"',
+            collectCodeCoverage:                true,
+            collectCCRepository:                runtimeParms.ccRepo,
+            collectCCSystem:                    envSettings.coco.systemId,
+            collectCCTestID:                    envSettings.coco.testId,
+            clearCodeCoverage:                  false,
+            logLevel:                           'INFO'
+        )
+
+        junit(
+            allowEmptyResults:  true, 
+            keepLongStdio:      true, 
+            testResults:        envSettings.ttt.results.jUnit.folder + '/*.xml'
+        )
+    }
 }
 
 def runIntegrationTests(Map runtimeParms, Map envSettings) {
-    echo "Running Integration Tests"
+
+    echo "[Info] - Execute Module Integration Tests."
+
+    envSettings.ttt.environmentIds.nonVirtualized.each {
+
+        def envType     = it.key
+        def envId       = it.value
+
+        totaltest(
+            connectionId:                       settings.hci.connectionId,
+            credentialsId:                      runtimeParms.hostCredentialsId,             
+            serverUrl:                          settings.ces.url, 
+            serverCredentialsId:                runtimeParms.hostCredentialsId, 
+            environmentId:                      envId, 
+            localConfig:                        false,
+            folderPath:                         envSettings.ttt.nvtFolder, 
+            recursive:                          true, 
+            selectProgramsOption:               true, 
+            jsonFile:                           envSettings.ispw.changedProgramsFile,
+            haltPipelineOnFailure:              false,                 
+            stopIfTestFailsOrThresholdReached:  false,
+            createJUnitReport:                  true, 
+            createReport:                       true, 
+            createResult:                       true, 
+            createSonarReport:                  true,
+            // contextVariables:                   '"nvt_ispw_app=' + applicationQualifier + 
+            //                                     ',nvt_ispw_level1=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level1 + 
+            //                                     ',nvt_ispw_level2=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level2 + 
+            //                                     ',nvt_ispw_level3=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level3 + 
+            //                                     ',nvt_ispw_level4=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level4 + 
+            //                                     '"',                
+            collectCodeCoverage:                true,
+            collectCCRepository:                runtimeParms.ccRepo,
+            collectCCSystem:                    envSettings.coco.systemId,
+            collectCCTestID:                    envSettings.coco.testId,
+            clearCodeCoverage:                  false,
+            logLevel:                           'INFO'
+        )
+    }
 }
 
 def runSonarScan(Map runtimeParms, Map envSettings) {
