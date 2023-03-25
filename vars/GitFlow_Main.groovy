@@ -96,7 +96,8 @@ def initializeSettings(configFile, parms) {
 }
 
 def addFolderNames(settings) {
-
+echo "Settings before Folders"
+echo settings.toString()
     settings.ispw.configFile        = settings.ispw.configFile.folder           + '/' + settings.ispw.configFile.name
     settings.ttt.rootFolder         = settings.ispw.mfProject.rootFolder        + '/' + settings.ttt.folders.root
     settings.ttt.vtFolder           = settings.ttt.rootFolder                   + '/' + settings.ttt.folders.virtualizedTests
@@ -109,7 +110,10 @@ def addFolderNames(settings) {
     settings.sonar.resultsFileNvt   = settings.ttt.folders.nonVirtualizedTests  + '.' + settings.ttt.results.sonar.fileNameBase
     settings.sonar.resultsFileList  = []        
     settings.sonar.codeCoverageFile = settings.coco.results.sonar.folder        + '/' + settings.coco.results.sonar.file
-    settings.jUnitResultsFile       = settings.ttt.results.jUnit.folder      + '/' + settings.ttt.results.jUnit.file
+    settings.jUnit.resultsFile       = settings.ttt.results.jUnit.folder      + '/' + settings.ttt.results.jUnit.file
+
+echo "Settings after Folders"
+echo settings.toString()
 
     return settings
 }
