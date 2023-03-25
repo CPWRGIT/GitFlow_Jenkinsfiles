@@ -95,6 +95,8 @@ def initializeSettings(configFile, parms) {
 }
 
 def addFolderNames(settings) {
+echo "Settings: "
+echo settings.toString()
 
     settings.ispw.configFile        = settings.ispw.configFile.folder           + '/' + settings.ispw.configFile.name
     settings.ttt.rootFolder         = settings.ispw.mfProject.rootFolder        + '/' + settings.ttt.folders.root
