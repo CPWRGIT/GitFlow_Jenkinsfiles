@@ -115,7 +115,8 @@ def addFolderNames(settings) {
 }
 
 def addIspwConfigFileContent(settings)  {
-    
+echo "Settings before"
+echo settings.toString()
     def tmpText     = readFile(file: settings.ipsw.configFile)
 echo "Temp Text"
 echo tmpText.toString()
