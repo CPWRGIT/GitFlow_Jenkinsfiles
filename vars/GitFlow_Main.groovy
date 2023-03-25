@@ -78,7 +78,7 @@ def initializeSettings(configFile, parms) {
         cleanWs()
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
-        settings                    = tmpSetting.executionEnvironments[settings.demoEnvironment]
+        settings                    = tmpSettings.executionEnvironments[settings.demoEnvironment]
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
 
