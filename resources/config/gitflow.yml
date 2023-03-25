@@ -12,7 +12,7 @@ executionEnvironments:
     xlr:
       template:               'GitFlow/GitFlow_Release'
     jenkins:
-      cliPath:                'C:/TopazCLI201301'
+      cliPath:                'C:/TopazCLI201401'
     ispw:
       libraryQualifier:         'SALESSUP'
       mfProject:

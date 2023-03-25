@@ -171,20 +171,28 @@ def extendSettings(settings) {
 def cloneRepo(settings) {
 
     stage ('Checkout') {
-        // checkout scm
-        checkout(
-            changelog:  false, 
-            poll:       false, 
-            scm:        [
-                $class:             'GitSCM', 
-                branches:           [[name: BRANCH_NAME]], 
-                extensions:         [], 
-                userRemoteConfigs:  [[
-                    credentialsId:  settings.git.credentialsId, 
-                    url:            settings.git.repoUrl
-                ]]
-            ]
-        )
+
+        if(BRANCH_NAME.caontains("release")) {
+            
+            checkout(
+                changelog:  false, 
+                poll:       false, 
+                scm:        [
+                    $class:             'GitSCM', 
+                    branches:           [[name: BRANCH_NAME]], 
+                    extensions:         [], 
+                    userRemoteConfigs:  [[
+                        credentialsId:  settings.git.credentialsId, 
+                        url:            settings.git.repoUrl
+                    ]]
+                ]
+            )
+        }
+        else
+        {
+            
+            checkout scm
+        }
     }
 }
 
