@@ -172,8 +172,8 @@ def cloneRepo(settings) {
 
     stage ('Checkout') {
 
-        if(BRANCH_NAME.caontains("release")) {
-            
+        if(BRANCH_NAME.contains("release")) {
+
             checkout(
                 changelog:  false, 
                 poll:       false, 
