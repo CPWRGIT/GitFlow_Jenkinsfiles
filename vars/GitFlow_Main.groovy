@@ -9,7 +9,7 @@ def configFile
 
 def call(Map parms) {
 
-    parms.demoEnvironment   = parmsarms.demoEnvironment.toLowerCase()
+    parms.demoEnvironment   = parms.demoEnvironment.toLowerCase()
     configFile              = './config/gitflow.yml'    
 
     def settings = [:]
