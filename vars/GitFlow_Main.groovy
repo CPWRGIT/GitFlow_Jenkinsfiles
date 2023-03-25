@@ -45,7 +45,7 @@ def call(Map parms) {
             def cesToken
             def xlrReleaseNumber
 
-            settings = extendRuntimeParms(settings)
+            settings = extendSettings(settings)
 
             loadMainframeCode(fromCommit, toCommit, settings)
 
@@ -148,7 +148,7 @@ def addCoCoParms(settings) {
     return settings
 }
 
-def extendRuntimeParms(settings) {
+def extendSettings(settings) {
 
     def hostCreds           = extractCredentials(settings.hci.credentialsId) 
     settings.hci.user       = hostCreds[0]
@@ -178,8 +178,8 @@ def cloneRepo(settings) {
                 branches:           [[name: BRANCH_NAME]], 
                 extensions:         [], 
                 userRemoteConfigs:  [[
-                    credentialsId:  runtimeParms.gitCredentialsId, 
-                    url:            runtimeParms.gitRepoUrl
+                    credentialsId:  settings.git.credentialsId, 
+                    url:            settings.git.repoUrl
                 ]]
             ]
         )
@@ -341,7 +341,7 @@ def buildMainframeCode(hostConnection, cesCredentialsId) {
     }
 }
 
-def runUnitTests(settings) {
+def runUnitTests(Map settings) {
 
     stage("Run Unit Test") {
 
@@ -380,7 +380,7 @@ def runUnitTests(settings) {
     }
 }
 
-def runIntegrationTests(Map runtimeParms, Map envSettings) {
+def runIntegrationTests(Map settings) {
 
     echo "[Info] - Execute Module Integration Tests."
 
