@@ -126,7 +126,7 @@ def addIspwConfigFileContent(settings)  {
     settings.ispw.runtimeConfig = ispwConfig.runtimeConfig
     settings.ispw.stream        = ispwConfig.stream
     settings.ispw.application   = ispwConfig.application
-    settings.ispw.appQualifier  = settings.ispw.libraryQualifier + '.' settings.ispw.application
+    settings.ispw.appQualifier  = settings.ispw.libraryQualifier + '.' + settings.ispw.application
 
     return settings
 }
