@@ -81,6 +81,7 @@ def initializeSettings(configFile, parms) {
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
+        settings                    = addIspwConfigFileContent(settings)
 
         settings.demoEnvironment    = parms.demoEnvironment
         settings.hci.credentialsId  = parms.hostCredentialsId
