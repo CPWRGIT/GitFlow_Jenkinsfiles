@@ -24,15 +24,15 @@ def call(Map parms) {
 
         if(BRANCH_NAME.startsWith("feature")) {
 
-            def assignmentId = 'GFLD0000001'
+            def assignmentId
 
             loadMainframeCode(settings)
 
-            //assignmentId = getAssignmentId(settings.automaticBuildFile)
+            assignmentId = getAssignmentId(settings.automaticBuildFile)
 
             if (assignmentId != null) {
 
-                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId)
+                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
 
                 runUnitTests(settings)
 
@@ -252,20 +252,27 @@ def determineCommitInfo() {
 
 def loadMainframeCode(Map settings) {
 
-    gitToIspwIntegration( 
-        connectionId:       settings.hci.connectionId,
-        credentialsId:      settings.hci.credentialsId,
-        runtimeConfig:      settings.ispw.runtimeConfig,
-        stream:             settings.ispw.stream,
-        app:                settings.ispw.application, 
-        branchMapping:      'feature/** => FEAT,per-branch',
-        ispwConfigPath:     settings.ispw.ispwConfigFile,
-        gitCredentialsId:   settings.git.credentialsId,
-        gitRepoUrl:         settings.git.repoUrl
-    )
+    echo "[Info] - Loading code from feature branch " + BRANCH_NAME + "."
+
+    stage("Mainframe Load") {    
+
+        gitToIspwIntegration( 
+            connectionId:       settings.hci.connectionId,
+            credentialsId:      settings.hci.credentialsId,
+            runtimeConfig:      settings.ispw.runtimeConfig,
+            stream:             settings.ispw.stream,
+            app:                settings.ispw.application, 
+            branchMapping:      'feature/** => FEAT,per-branch',
+            ispwConfigPath:     settings.ispw.ispwConfigFile,
+            gitCredentialsId:   settings.git.credentialsId,
+            gitRepoUrl:         settings.git.repoUrl
+        )
+    }
 }
 
 def loadMainframeCode(String fromCommit, String toCommit, Map settings) {
+
+    echo "[Info] - Loading code from release branch " + BRANCH_NAME + "."
 
     stage("Mainframe Load") {
 
@@ -320,7 +327,7 @@ def getAssignmentId(buildFile) {
     }
 }
 
-def buildMainframeCode(hostConnection, cesCredentialsId) {
+def buildMainframeCode(hostConnection, cesCredentialsId, runtimeConfig) {
 
     stage("Mainframe Build") {
 
