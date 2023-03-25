@@ -116,24 +116,16 @@ def addFolderNames(settings) {
 }
 
 def addIspwConfigFileContent(settings)  {
-echo "Settings before"
-echo settings.ispw.toString()
-echo settings.ipsw.toString()
-    def tmpText     = readFile(file: settings.ipsw.configFile)
-echo "Temp Text"
-echo tmpText.toString()
+
+    def tmpText                 = readFile(file: settings.ispw.configFile)
+
     // remove the first line (i.e. use the the substring following the first carriage return '\n')
-    tmpText         = tmpText.substring(tmpText.indexOf('\n') + 1)
-    def ispwConfig  = readYaml(text: tmpText).ispwApplication
-echo "ISPW Config"
-echo ispwConfig.toString()
+    tmpText                     = tmpText.substring(tmpText.indexOf('\n') + 1)
+    def ispwConfig              = readYaml(text: tmpText).ispwApplication
     settings.ispw.runtimeConfig = ispwConfig.runtimeConfig
     settings.ispw.stream        = ispwConfig.stream
     settings.ispw.application   = ispwConfig.application
     settings.ispw.appQualifier  = settings.ispw.libraryQualifier    + ispwConfig.ispwApplication.application
-
-echo "Settings"
-echo settings.toString()
 
     return settings
 }
