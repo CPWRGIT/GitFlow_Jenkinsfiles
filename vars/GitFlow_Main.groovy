@@ -16,7 +16,7 @@ def call(Map parms) {
 
     node {
 
-        settings     = initializeEnvSettings(configFile, parms)
+        settings     = initializeSettings(configFile, parms)
 
         cloneRepo(settings)
 
@@ -69,7 +69,7 @@ def call(Map parms) {
     }
 }
 
-def initialize(configFile, parms) {
+def initializeSettings(configFile, parms) {
 
     def settings
 
