@@ -141,7 +141,7 @@ def addCoCoParms(settings) {
         ccSystemId  = BRANCH_NAME.substring(BRANCH_NAME.length() - CC_SYSTEM_ID_MAX_LEN)
     }
     else {
-        ccSystemId  = executionBranch
+        ccSystemId  = BRANCH_NAME
     }
     
     settings.coco.systemId  = ccSystemId
