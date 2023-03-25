@@ -110,7 +110,8 @@ echo settings.toString()
     settings.sonar.resultsFileNvt   = settings.ttt.folders.nonVirtualizedTests  + '.' + settings.ttt.results.sonar.fileNameBase
     settings.sonar.resultsFileList  = []        
     settings.sonar.codeCoverageFile = settings.coco.results.sonar.folder        + '/' + settings.coco.results.sonar.file
-    settings.jUnit.resultsFile       = settings.ttt.results.jUnit.folder      + '/' + settings.ttt.results.jUnit.file
+    settings.jUnit                  = [:]
+    settings.jUnit.resultsFile      = settings.ttt.results.jUnit.folder         + '/' + settings.ttt.results.jUnit.file
 
 echo "Settings after Folders"
 echo settings.toString()
