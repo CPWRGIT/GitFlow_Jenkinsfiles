@@ -259,7 +259,7 @@ def loadMainframeCode(Map settings) {
         branchMapping:      'feature/** => FEAT,per-branch',
         ispwConfigPath:     settings.ispw.ispwConfigFile,
         gitCredentialsId:   settings.git.credentialsId,
-        gitRepoUrl:         setting.git.repoUrl
+        gitRepoUrl:         settings.git.repoUrl
     )
 }
 
