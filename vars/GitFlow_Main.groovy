@@ -161,9 +161,9 @@ def extendSettings(settings) {
     settings.git.password   = gitCreds[1]
 
     def commitInfo          = determineCommitInfo()
-    settings.fromCommit    = commitInfo['fromCommit']
-    settings.toCommit      = commitInfo['toCommit']
-    settings.currentTag    = commitInfo['currentTag']
+    settings.fromCommit     = commitInfo['fromCommit']
+    settings.toCommit       = commitInfo['toCommit']
+    settings.currentTag     = commitInfo['currentTag']
 
     return settings
 }
@@ -263,7 +263,7 @@ def loadMainframeCode(Map settings) {
             stream:             settings.ispw.stream,
             app:                settings.ispw.application, 
             branchMapping:      'feature/** => FEAT,per-branch',
-            ispwConfigPath:     settings.ispw.ispwConfigFile,
+            ispwConfigPath:     settings.ispw.configFile,
             gitCredentialsId:   settings.git.credentialsId,
             gitRepoUrl:         settings.git.repoUrl
         )
