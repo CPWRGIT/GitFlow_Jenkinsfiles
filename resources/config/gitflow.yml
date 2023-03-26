@@ -9,6 +9,8 @@ executionEnvironments:
     sonar:
       scanner:                Scanner
       server:                 Sonar
+      cobolSuffixes:          'cbl,testsuite,testscenario,stub,result,scenario,context'
+      copySuffixes:           'cpy'
     xlr:
       template:               'GitFlow/GitFlow_Release'
     jenkins:

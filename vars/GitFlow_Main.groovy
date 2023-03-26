@@ -130,6 +130,7 @@ def addIspwConfigFileContent(settings)  {
     settings.ispw.application   = ispwConfig.application
     settings.ispw.appQualifier  = settings.ispw.libraryQualifier + '.' + settings.ispw.application
 
+    settings.sonar.projectName  = settings.ispw.stream + "_" + settings.ispw.application
     return settings
 }
 
@@ -465,7 +466,105 @@ def getCodeCoverage(settings) {
 }
 
 def runSonarScan(Map settings) {
-    echo "Running Sonar Scan"
+
+    stage("SonarQube") {
+        def sonarTestResults        = ''
+        def sonarTestsParm          = ''
+        def sonarTestReportsParm    = ''
+        def sonarCodeCoverageParm   = ''
+        def scannerHome             = tool settings.sonar.scanner            
+
+        def sonarProjectName
+
+        sonarTestReportsParm = getReportsParm(settings)
+        if(sonarTestReportsParm != '') {
+
+            sonarTestsParm          = ' -Dsonar.tests="' + settings.ttt.rootFolder + '"'
+        }
+
+        sonarCodeCoverageParm = getCodeCoverageParm(settings)
+
+        withSonarQubeEnv(synchConfig.environment.sonar.server) {
+
+            bat '"' + scannerHome + '/bin/sonar-scanner"' + 
+                ' -Dsonar.branch.name=' + BRANCH_NAME +
+                ' -Dsonar.projectKey=' + settings.sonar.projectName + 
+                ' -Dsonar.projectName=' + settings.sonar.projectName +
+                ' -Dsonar.projectVersion=1.0' +
+                ' -Dsonar.sources=' + settings.sonar.cobolFolder + 
+                ' -Dsonar.cobol.copy.directories=' + settings.sonar.copybookFolder +
+                ' -Dsonar.cobol.file.suffixes=' + settings.sonar.cobolSuffixes + 
+                ' -Dsonar.cobol.copy.suffixes=' + settings.sonar.copySuffixes +
+                sonarTestsParm +
+                sonarTestReportsParm +
+                sonarCodeCoverageParm +
+                ' -Dsonar.ws.timeout=480' +
+                ' -Dsonar.sourceEncoding=UTF-8'
+        }
+    }
+}
+
+def getReportsParm(Map settings) {
+
+    def reportsParm = ''
+
+    try {
+
+        readFile(file: settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileVt)
+        reportsParm    = ' -Dsonar.testExecutionReportPaths="' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileVt + '"'
+
+        echo "[Info] - Found Virtualized Test Results File\n" +
+            settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileVt
+    }
+    catch(Error e) {
+
+        echo "[Info] - No Virtualized Test Results File was produced.\n" +
+            e
+    }
+
+    try {
+
+        readFile(file: settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileVt)
+        if(reportsParm == '') {
+            
+            reportsParm    = ' -Dsonar.testExecutionReportPaths="' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt + '"'
+
+            echo "[Info] - Found Non-Virtualized Test Results File\n" +
+                settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt
+        }
+        else {
+
+            reportsParm    = reportsParm + ',' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt + '"'
+        }
+    }
+    catch(Error e) {
+
+        echo "[Info] - No Non-Virtualized Test Results File was produced.\n" +
+            e
+    }
+
+    return reportsParm
+}
+
+def getCodeCoverageParm(settings) {
+
+    def codeCoverageParm = ''
+
+    try{
+        readFile(file: settings.sonar.codeCoverageFile)
+        codeCoverageParm   = ' -Dsonar.coverageReportPaths=' + settings.sonar.codeCoverageFile
+
+        echo "[Info] - Found CodeCoverage Results File\n" +
+            settings.sonar.codeCoverageFile
+    }
+    catch(Exception e){
+        codeCoverageParm   = ''
+
+        echo "[Info] - No COdeCoverage File was found.\n" +
+            e
+    }
+
+    return codeCoverageParm
 }
 
 def determineIspwReleaseNumber(tag) {

@@ -22,6 +22,8 @@ String ispwConfigFile               = "./GenApp_MainframeCore/ispwconfig.yml"
 String projectSettingsFile          = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
 String sonarLintSettingsFile        = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
 
+String istwStream                   = "GITFLOW"
+
 String sonarServerUrl               = "http://192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
 String sonarQualityGateId           = "AYb96SGym7XD63sZxcew"
 String sonarQubeTokenStore          = 'SonarQube_Token_Basic'
@@ -48,7 +50,7 @@ def environmentSettings             = [
             'hciConnectionId':          'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756',
             'ispwRuntime':              'iccga',
             'xgSsid':                   'MXG1',
-            'sonarProjectName':         "${ispwApp}",
+            'sonarProjectName':         "${ispwStream}_${ispwApp}",
             'gitHubRepo':               "GitFlow_" + hostUserId, 
             'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
             'componentIds':             [
@@ -61,7 +63,7 @@ def environmentSettings             = [
             'hciConnectionId':          '263438b6-f699-4373-be9f-378af3d28633',
             'ispwRuntime':              'ic2ga',
             'xgSsid':                   'MXG2',   
-            'sonarProjectName':         "${ispwApp}",
+            'sonarProjectName':         "${ispwStream}_${ispwApp}",
             'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
             'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
             'componentIds':             [
