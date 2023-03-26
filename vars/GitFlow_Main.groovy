@@ -484,7 +484,7 @@ def runSonarScan(Map settings) {
 
         sonarCodeCoverageParm = getCodeCoverageParm(settings)
 
-        withSonarQubeEnv(synchConfig.environment.sonar.server) {
+        withSonarQubeEnv(settings.sonar.server) {
 
             bat '"' + scannerHome + '/bin/sonar-scanner"' + 
                 ' -Dsonar.branch.name=' + BRANCH_NAME +
