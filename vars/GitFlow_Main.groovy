@@ -525,16 +525,17 @@ def getReportsParm(Map settings) {
     try {
 
         readFile(file: settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileVt)
+        echo "[Info] - Found Non-Virtualized Test Results File\n" +
+            settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt
+
         if(reportsParm == '') {
             
             reportsParm    = ' -Dsonar.testExecutionReportPaths="' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt + '"'
 
-            echo "[Info] - Found Non-Virtualized Test Results File\n" +
-                settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt
         }
         else {
 
-            reportsParm    = reportsParm + ',' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt + '"'
+            reportsParm    = reportsParm + ',"' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt + '"'
         }
     }
     catch(Error e) {
