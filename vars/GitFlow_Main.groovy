@@ -38,6 +38,8 @@ def call(Map parms) {
 
                 runIntegrationTests(settings)
 
+                getCodeCoverage(settings)
+
                 runSonarScan(settings)
             }
         }
@@ -65,7 +67,7 @@ def call(Map parms) {
             }
         }
         else {
-
+            
             runSonarScan(settings)
         }
     }
@@ -435,6 +437,29 @@ def runIntegrationTests(Map settings) {
             collectCCTestID:                    settings.coco.testId,
             clearCodeCoverage:                  false,
             logLevel:                           'INFO'
+        )
+    }
+}
+
+def getCodeCoverage(settings) {
+
+    echo "[Info] - Getting Code Coverage data from Mainframe."
+
+    stage("Get Code Coverage") {
+
+        step(
+            [
+                $class:             'CodeCoverageBuilder', 
+                connectionId:       settings.hci.connectionId, 
+                credentialsId:      settings.hci.credentialsId,
+                analysisProperties: """
+                    cc.sources=${settings.coco.sources}
+                    cc.repos=${settings.coco.repo}
+                    cc.system=${settings.coco.systemId}
+                    cc.test=${settings.coco.testId}
+                """
+                //                    cc.ddio.overrides=${ccDdioOverrides}
+            ]
         )
     }
 }
