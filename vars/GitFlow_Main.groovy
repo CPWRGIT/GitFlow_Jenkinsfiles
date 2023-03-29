@@ -181,8 +181,9 @@ def deactivateSandboxFlag(settings) {
     echo settings.ispwConfig.toString()
 
     writeYaml(
-        file:   settings.ispw.configFile,
-        data:   settings.ispwConfig
+        file:       settings.ispw.configFile,
+        data:       settings.ispwConfig,
+        overwrite:  true
     )
 
 }
