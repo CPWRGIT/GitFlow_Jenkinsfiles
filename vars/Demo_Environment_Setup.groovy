@@ -80,7 +80,7 @@ node{
 //    extractEnvironmentCredentials()
 
     gitHubAdminTokenPlain   = getGitHubAdminTokenPlain(gitHubAdminCredentialsTk)
-echo "Token " + gitHubAdminTokenPlain
+
     gitHubAdminTokenBasic   = getGitHubAdminTokenBasic(gitHubAdminTokenStore)
     sonarQubeToken          = getSonarQubeToken(sonarQubeTokenStore)
 

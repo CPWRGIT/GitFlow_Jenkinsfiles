@@ -51,6 +51,8 @@ def call(Map parms) {
 
             settings = extendSettings(settings)
 
+            deactivateSandboxFlag(settings)
+
             loadMainframeCode(settings.fromCommit, settings.toCommit, settings)
 
             releaseAssignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
@@ -123,11 +125,13 @@ def addIspwConfigFileContent(settings)  {
     def tmpText                 = readFile(file: settings.ispw.configFile)
 
     // remove the first line (i.e. use the the substring following the first carriage return '\n')
-    tmpText                     = tmpText.substring(tmpText.indexOf('\n') + 1)
-    def ispwConfig              = readYaml(text: tmpText).ispwApplication
-    settings.ispw.runtimeConfig = ispwConfig.runtimeConfig
-    settings.ispw.stream        = ispwConfig.stream
-    settings.ispw.application   = ispwConfig.application
+    tmpText                         = tmpText.substring(tmpText.indexOf('\n') + 1)
+    def ispwConfig                  = readYaml(text: tmpText)
+
+    settings.ispwConfig         = ispwConfig
+    settings.ispw.runtimeConfig = ispwConfig.ispwApplication.runtimeConfig
+    settings.ispw.stream        = ispwConfig.ispwApplication.stream
+    settings.ispw.application   = ispwConfig.ispwApplication.application
     settings.ispw.appQualifier  = settings.ispw.libraryQualifier + '.' + settings.ispw.application
 
     settings.sonar.projectName  = settings.ispw.stream + "_" + settings.ispw.application
@@ -169,6 +173,18 @@ def extendSettings(settings) {
     settings.currentTag     = commitInfo['currentTag']
 
     return settings
+}
+
+def deactivateSandboxFlag(settings) {
+    settings.ispwConfig.ispwApplication.sandbox = 'N'
+    echo "New ispwconfig.yml"
+    echo settings.ispwConfig
+
+    writeYaml(
+        file:   settings.ispw.configFile,
+        data:   settings.ispwConfig
+    )
+
 }
 
 def cloneRepo(settings) {
