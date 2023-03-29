@@ -178,7 +178,7 @@ def extendSettings(settings) {
 def deactivateSandboxFlag(settings) {
     settings.ispwConfig.ispwApplication.sandbox = 'N'
     echo "New ispwconfig.yml"
-    echo settings.ispwConfig
+    echo settings.ispwConfig.toString()
 
     writeYaml(
         file:   settings.ispw.configFile,
