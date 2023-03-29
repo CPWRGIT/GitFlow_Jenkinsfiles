@@ -484,6 +484,7 @@ def getCodeCoverage(settings) {
 def runSonarScan(Map settings) {
 
     stage("SonarQube") {
+
         def sonarTestResults        = ''
         def sonarTestsParm          = ''
         def sonarTestReportsParm    = ''
@@ -492,7 +493,8 @@ def runSonarScan(Map settings) {
 
         def sonarProjectName
 
-        sonarTestReportsParm = getReportsParm(settings)
+        sonarTestReportsParm        = getReportsParm(settings)
+
         if(sonarTestReportsParm != '') {
 
             sonarTestsParm          = ' -Dsonar.tests="' + settings.ttt.rootFolder + '"'
@@ -532,7 +534,7 @@ def getReportsParm(Map settings) {
         echo "[Info] - Found Virtualized Test Results File\n" +
             settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileVt
     }
-    catch(Error e) {
+    catch(Exception e) {
 
         echo "[Info] - No Virtualized Test Results File was produced.\n" +
             e
@@ -554,7 +556,7 @@ def getReportsParm(Map settings) {
             reportsParm    = reportsParm + ',"' + settings.sonar.resultsFolder + '/' + settings.sonar.resultsFileNvt + '"'
         }
     }
-    catch(Error e) {
+    catch(Exception e) {
 
         echo "[Info] - No Non-Virtualized Test Results File was produced.\n" +
             e
