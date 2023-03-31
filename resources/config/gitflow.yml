@@ -60,10 +60,10 @@ executionEnvironments:
         virtualizedTests:       'Unit'
         nonVirtualizedTests:    'Integration'
       environmentIds:
-        virtualized:            5c519facfba8720a90ccc645
+        virtualized:            198.147.191.82:16196 #5c519facfba8720a90ccc645
         nonVirtualized:
-          batch:                5c519facfba8720a90ccc645
-          cics:                 5c51a46afba8720a90ccc64d
+          batch:                198.147.191.82:16196 #5c519facfba8720a90ccc645
+#          cics:                 5c51a46afba8720a90ccc64d
       results:
         sonar:
           folder:               './TTTSonar'    
