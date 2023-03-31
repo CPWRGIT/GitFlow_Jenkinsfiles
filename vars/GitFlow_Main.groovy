@@ -385,10 +385,12 @@ def runUnitTests(Map settings) {
         echo "[Info] - Execute Unit Tests."
 
         totaltest(
+            connectionId:                       settings.hci.connectionId,
             serverUrl:                          settings.ces.url, 
             serverCredentialsId:                settings.hci.credentialsId, 
+            selectEnvironmentRadio:             '-hci',
             credentialsId:                      settings.hci.credentialsId, 
-            environmentId:                      settings.ttt.environmentIds.virtualized,
+            //environmentId:                      settings.ttt.environmentIds.virtualized,
             localConfig:                        false, 
             folderPath:                         settings.ttt.vtFolder, 
             recursive:                          true, 
@@ -421,16 +423,17 @@ def runIntegrationTests(Map settings) {
 
     echo "[Info] - Execute Module Integration Tests."
 
-    settings.ttt.environmentIds.nonVirtualized.each {
+    // settings.ttt.environmentIds.nonVirtualized.each {
 
-        def envType     = it.key
-        def envId       = it.value
+    //     def envType     = it.key
+    //     def envId       = it.value
 
         totaltest(
             connectionId:                       settings.hci.connectionId,
             credentialsId:                      settings.hci.credentialsId,             
             serverUrl:                          settings.ces.url, 
             serverCredentialsId:                settings.hci.credentialsId, 
+            //selectEnvironmentRadio:             '-hci',
             environmentId:                      envId, 
             localConfig:                        false,
             folderPath:                         settings.ttt.nvtFolder, 
@@ -456,7 +459,7 @@ def runIntegrationTests(Map settings) {
             clearCodeCoverage:                  false,
             logLevel:                           'INFO'
         )
-    }
+    // }
 }
 
 def getCodeCoverage(settings) {
