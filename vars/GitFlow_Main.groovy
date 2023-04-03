@@ -24,24 +24,27 @@ def call(Map parms) {
 
         if(BRANCH_NAME.startsWith("feature")) {
 
-            def assignmentId
+            if(BUILD_NUMBER != "1") {
 
-            loadMainframeCode(settings)
+                def assignmentId
 
-            assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
+                loadMainframeCode(settings)
 
-            if (assignmentId != null) {
+                assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
 
-                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
+                if (assignmentId != null) {
 
-                runUnitTests(settings)
+                    buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
 
-                runIntegrationTests(settings)
+                    runUnitTests(settings)
 
-                getCodeCoverage(settings)
+                    runIntegrationTests(settings)
 
-                runSonarScan(settings)
+                    getCodeCoverage(settings)
+                }
             }
+
+            runSonarScan(settings)            
         }
         else if(BRANCH_NAME.startsWith("release")) {
 
@@ -65,7 +68,6 @@ def call(Map parms) {
                 cesToken            = extractToken(settings.ces.credentialsId)
 
                 startXlr(ispwReleaseNumber, releaseAssignmentId, cesToken, settings)
-            
             }
         }
         else {
