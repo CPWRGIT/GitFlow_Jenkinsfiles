@@ -60,9 +60,9 @@ executionEnvironments:
         virtualizedTests:       'Unit'
         nonVirtualizedTests:    'Integration'
       environmentIds:
-        virtualized:            5b5089c9787be73b59238d35 #5c519facfba8720a90ccc645
+        virtualized:            5c519facfba8720a90ccc645
         nonVirtualized:
-          batch:                5b5089c9787be73b59238d35 #5c519facfba8720a90ccc645
+          batch:                5c519facfba8720a90ccc645
 #          cics:                 5c51a46afba8720a90ccc64d
       results:
         sonar:
