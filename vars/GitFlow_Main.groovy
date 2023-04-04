@@ -404,7 +404,7 @@ def runUnitTests(Map settings) {
             createReport:                       true, 
             createResult:                       true, 
             createSonarReport:                  true,
-            //contextVariables:                   '"ispw_app=' + settings.ispw.appQualifier + ',ispw_level=FEAT"',
+            contextVariables:                   '"load_lib=SALESSUP.GFLD.FEAT.LOAD,environment_id=' + settings.ttt.environmentIds.virtualized + '"',
             collectCodeCoverage:                true,
             collectCCRepository:                settings.coco.repo,
             collectCCSystem:                    settings.coco.systemId,
