@@ -70,7 +70,7 @@ def call(Map parms) {
 
                 buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
 
-                startXlr(ispwReleaseNumber, releaseAssignmentId, cesToken, settings)
+                startXlr(releaseAssignmentId, cesToken, settings)
             }
         }
         else {
