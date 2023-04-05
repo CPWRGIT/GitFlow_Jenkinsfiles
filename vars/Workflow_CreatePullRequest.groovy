@@ -12,7 +12,7 @@ node{
 
 }
 
-def getGitHubAdminTokenPlain (credentials) {
+def getGitTokenBasic(credentials) {
 
     def token
 
