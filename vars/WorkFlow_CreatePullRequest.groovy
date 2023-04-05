@@ -2,15 +2,25 @@
 node{
 
     def gitHubTokenBasic    = getGitTokenBasic(gitCredentials)
-    def gitRepoName         = "GitFlow_" + gitRepoOwner
+    def gitRepoName         = "GitFlow_" + gitRepoOwner    
 
     cleanWs()
 
     currentBuild.displayName = "${gitRepoName}: Pull Request for Release ${gitReleaseTag}"
 
-    createPullRequest(gitHubTokenBasic, gitRepoName)
+    stage("Release to Development") {
 
+        def targetBranch = 'development' 
+        createPullRequest(gitSourceBranch, targetBranch, gitHubTokenBasic, gitRepoName)
+    }
+
+    stage("Release to Main"){
+
+        def targetBranch = 'main' 
+        createPullRequest(gitSourceBranch, targetBranch, gitHubTokenBasic, gitRepoName)
+    }
 }
+
 
 def getGitTokenBasic(credentials) {
 
@@ -34,15 +44,15 @@ def getGitTokenBasic(credentials) {
     return token
 }
 
-def createPullRequest(token, repo) {
+def createPullRequest(sourceBranch, targetBranch, token, repo) {
 
     try{
 
         def requestBody = '''{
             "title": 	"Merge Release ''' + gitReleaseTag + '''",
-	        "head":	  	"development",
-	        "base":		"main",
-	        "body":		"Release ''' + gitReleaseTag + ''' has been implemented successfully in production."   
+            "head":	  	"''' + sourceBranch + '''",
+            "base":		"''' + targetBranch + '''",
+            "body":		"Release ''' + gitReleaseTag + ''' has been implemented successfully in production."   
             }'''
 
         httpRequest(
@@ -67,4 +77,5 @@ def createPullRequest(token, repo) {
         error "[Error] - Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause.\n"
     
     }
+
 }

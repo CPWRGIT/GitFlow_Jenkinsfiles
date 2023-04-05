@@ -643,6 +643,10 @@ def startXlr(assignmentId, settings) {
                     propertyValue:  settings.currentTag
                 ],
                 [
+                    propertyName:   'Git_Branch', 
+                    propertyValue:  BRANCH_NAME
+                ],
+                [
                     propertyName: 'Jenkins_CES_Credentials', 
                     propertyValue: settings.ces.credentialsId
                 ],
