@@ -620,7 +620,7 @@ def startXlr(assignmentId, settings) {
                 ], 
                 [
                     propertyName:   'ISPW_Release_Number', 
-                    propertyValue:  releaseNumber
+                    propertyValue:  ispwReleaseNumber
                 ], 
                 [
                     propertyName:   'ISPW_Assignment', 
