@@ -53,8 +53,6 @@ def call(Map parms) {
         else if(BRANCH_NAME.startsWith("release")) {
 
             def releaseAssignmentId
-            def cesToken
-            def xlrReleaseNumber
 
             settings = extendSettings(settings)
 
@@ -70,7 +68,7 @@ def call(Map parms) {
 
                 buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
 
-                startXlr(releaseAssignmentId, cesToken, settings)
+                startXlr(releaseAssignmentId, settings)
             }
         }
         else {
@@ -599,7 +597,7 @@ def startXlr(assignmentId, settings) {
 
     stage("Start Release") {
         def ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
-        cesToken                = extractToken(settings.ces.credentialsId)
+        def cesToken            = extractToken(settings.ces.credentialsId)
 
         echo "Start XLR with: "
         echo 'CES_Token: ' + cesToken
