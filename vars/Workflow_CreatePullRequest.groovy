@@ -57,7 +57,7 @@ def createPullRequest(token, repo) {
             ignoreSslErrors:            true, 
             requestBody:                requestBody, 
             url:                        'https://api.github.com/repos/CPWRGIT/' + repo + '/pulls', 
-            validResponseCodes:         '200', 
+            validResponseCodes:         '201', 
             wrapAsMultipart:            false
         )
 
