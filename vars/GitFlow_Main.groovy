@@ -16,36 +16,40 @@ def call(Map parms) {
 
     node {
 
-        settings     = initializeSettings(configFile, parms)
+        settings    = initializeSettings(configFile, parms)
 
         cloneRepo(settings)
 
         settings    = addIspwConfigFileContent(settings)
 
-        if(BRANCH_NAME.startsWith("feature")) {
+        // For a feature branch:
+        //      For the first build (NUILD_NUMBER == "1"), only run the SonarQube scan, i.e. skip the rest of the pipeline
+        //      For any subsequent buils run the full pipeline
+        if( BRANCH_NAME.startsWith("feature")   &&
+            BUILD_NUMBER != "1"                     ) {
 
-            if(BUILD_NUMBER != "1") {
+            def assignmentId
 
-                def assignmentId
+            loadMainframeCode(settings)
 
-                loadMainframeCode(settings)
+            assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
 
-                assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
+            // Assignment ID == NULL means that no automtic build params file was found. This is the case when no mainframe components were changed.
+            //  Only if mainframe components were changed, mainframe builds or tests need to be run, and code coverage results need to be retrieved
+            if (assignmentId != null) {
 
-                if (assignmentId != null) {
+                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
 
-                    buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
+                runUnitTests(settings)
 
-                    runUnitTests(settings)
+                runIntegrationTests(settings)
 
-                    runIntegrationTests(settings)
-
-                    getCodeCoverage(settings)
-                }
+                getCodeCoverage(settings)
             }
 
             runSonarScan(settings)            
         }
+        // For a release branch run the "Release" pipeline
         else if(BRANCH_NAME.startsWith("release")) {
 
             def releaseAssignmentId
@@ -60,12 +64,11 @@ def call(Map parms) {
 
             releaseAssignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
 
+            // Assignment ID == NULL means that no automtic build params file was found. This is the case when no mainframe components were changed.
+            //  Only if mainframe components were changed, a mainframe build needs to be run, and the release will be triggered
             if (releaseAssignmentId != null) {
 
                 buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
-
-                ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
-                cesToken            = extractToken(settings.ces.credentialsId)
 
                 startXlr(ispwReleaseNumber, releaseAssignmentId, cesToken, settings)
             }
@@ -404,7 +407,7 @@ def runUnitTests(Map settings) {
             createReport:                       true, 
             createResult:                       true, 
             createSonarReport:                  true,
-            contextVariables:                   '"load_lib=SALESSUP.GFLD.FEAT.LOAD,environment_id=' + settings.ttt.environmentIds.virtualized + '"',
+            contextVariables:                   '"load_lib=SALESSUP.GFLD.FEAT.LOAD"',
             collectCodeCoverage:                true,
             collectCCRepository:                settings.coco.repo,
             collectCCSystem:                    settings.coco.systemId,
@@ -592,15 +595,10 @@ def getCodeCoverageParm(settings) {
     return codeCoverageParm
 }
 
-def determineIspwReleaseNumber(tag) {
+def startXlr(assignmentId, settings) {
 
-    def releaseNumber       = tag.substring(1, 9)
-    def releaseNumberParts  = releaseNumber.split("[.]")
-
-    return releaseNumberParts[0] + releaseNumberParts[1] + releaseNumberParts[2]
-}
-
-def startXlr(releaseNumber, assignmentId, cesToken, settings) {
+    ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
+    cesToken            = extractToken(settings.ces.credentialsId)
 
     echo "Start XLR with: "
     echo 'CES_Token: ' + cesToken
@@ -642,14 +640,25 @@ def startXlr(releaseNumber, assignmentId, cesToken, settings) {
                 propertyValue:  settings.hci.user
             ],
             [
+                propertyName:   'Git_Tag', 
+                propertyValue:  settings.currentTag
+            ],
+            [
                 propertyName: 'Jenkins_CES_Credentials', 
                 propertyValue: settings.ces.credentialsId
-            ]
-            // ,
-            // [
-            //     propertyName: 'Jenkins_Git_Credentials', 
-            //     propertyValue: pipelineParms.gitCredentialsId
-            // ] 
+            ],
+            [
+                propertyName: 'Jenkins_Git_Credentials', 
+                propertyValue: settings.git.credentialsId
+            ] 
         ]
     )    
+}
+
+def determineIspwReleaseNumber(tag) {
+
+    def releaseNumber       = tag.substring(1, 9)
+    def releaseNumberParts  = releaseNumber.split("[.]")
+
+    return releaseNumberParts[0] + releaseNumberParts[1] + releaseNumberParts[2]
 }
