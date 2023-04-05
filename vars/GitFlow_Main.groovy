@@ -606,7 +606,7 @@ def startXlr(assignmentId, settings) {
         echo 'ISPW_Owner: ' + settings.hci.user
         echo 'ISPW_Assignment: ' + assignmentId
         echo 'Jenkins_CES_Credentials: ' + settings.ces.credentialsId
-        echo 'Release Number: ' + releaseNumber
+        echo 'Release Number: ' + ispwReleaseNumber
 
         xlrCreateRelease(
             releaseTitle:       "GitFlow - Release for ${settings.hci.user}", 
