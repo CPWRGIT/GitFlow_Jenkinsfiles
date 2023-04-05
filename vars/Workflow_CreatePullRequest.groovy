@@ -49,7 +49,7 @@ def createPullRequest(token, repo) {
             consoleLogResponseBody:     true, 
             customHeaders:              [
                 [maskValue: false,  name: 'content-type',   value: 'application/json'], 
-                [maskValue: true,   name: 'authorization',  value: token], 
+                [maskValue: true,   name: 'authorization',  value: 'Basic ' + token], 
                 [maskValue: false,  name: 'accept',         value: 'application/vnd.github+json'], 
                 [maskValue: false,  name: 'user-agent',     value: 'cpwrgit']
             ], 
