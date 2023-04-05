@@ -34,7 +34,7 @@ def getGitTokenBasic(credentials) {
     return token
 }
 
-def createGitRepository(token, repo) {
+def createPullRequest(token, repo) {
 
     try{
 
