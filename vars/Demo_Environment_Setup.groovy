@@ -158,7 +158,7 @@ node{
     
     stage("Modify TTT assets"){
 
-    //     def vtContextFiles = findFiles(glob: '**/Tests/Unit/**/*.context')
+        def vtContextFiles = findFiles(glob: '**/Tests/Unit/**/*.context')
 
         def stringsList = [
                 ['<ispw_application>', ispwApp]
