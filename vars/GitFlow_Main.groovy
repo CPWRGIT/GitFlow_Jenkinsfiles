@@ -10,6 +10,8 @@ def configFile
 def call(Map parms) {
 
     parms.demoEnvironment   = parms.demoEnvironment.toLowerCase()
+echo "Demo Environment: " + parms.demoEnvironment
+
     configFile              = './config/gitflow.yml'    
 
     def settings = [:]
@@ -87,10 +89,15 @@ def initializeSettings(configFile, parms) {
         cleanWs()
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
+
+echo "Temp Settings: " + tmpSettings.toString()
+
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
 
+echo "Settings: " + settings.toString()
+ 
         settings.demoEnvironment    = parms.demoEnvironment
         settings.hci.credentialsId  = parms.hostCredentialsId
         settings.ces.credentialsId  = parms.cesCredentialsId
