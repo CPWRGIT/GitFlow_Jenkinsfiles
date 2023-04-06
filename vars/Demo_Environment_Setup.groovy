@@ -434,7 +434,7 @@ def createGitRepository(token, repo, template) {
         def requestBody = '''{
                 "owner":    "CPWRGIT",
                 "name":     "''' + repo + '''",
-                "private":  false   
+                "private":  true   
             }'''
 
         httpRequest(
