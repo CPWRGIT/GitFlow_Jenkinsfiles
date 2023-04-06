@@ -1,80 +1,80 @@
 import groovy.json.JsonSlurper
 
-// Pipeline Parameters
-String hostUserId                   = HostUserId.toUpperCase()
-String hostCredentialsId            = HostCredentialsId
-String ispwApp                      = IspwApp.toUpperCase()
-String cesCredentialsId             = CesCredentialsId
-String gitCredentialsId             = GitCredentialsId
-String codeCoverageRepo             = CodeCoverageRepo.toUpperCase()
-String gitHubAdminUser              = GitHubAdminUser.toUpperCase()
-String gitHubAdminPassword          = GitHubAdminPassword
-
-// String defaultUtLevel               = DefaultUtLevel.toUpperCase()
-// String defaultFtLevel               = DefaultFtLevel.toUpperCase()
-
-String hostName 
-String targetEnvironment            = 'CWCC'
-
-String rootProjectFile              = "./.project"
-String jenkinsfile                  = "./GitFlow.jenkinsfile"
-String ispwConfigFile               = "./GenApp_MainframeCore/ispwconfig.yml"
-String projectSettingsFile          = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
-String sonarLintSettingsFile        = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
-
-String istwStream                   = "GITFLOW"
-
-String sonarServerUrl               = "http://192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
-String sonarQualityGateId           = "AYb96SGym7XD63sZxcew"
-String sonarQubeTokenStore          = 'SonarQube_Token_Basic'
-String sonarQubeToken               = ''
-
-String repoTemplate                 = 'GitFlow_Template'
-
-String gitHubAdminCredentialsPw     = 'CPWRGIT'
-String gitHubAdminCredentialsTk     = 'CPWRGIT_GitHub_New'
-String gitHubAdminTokenStore        = 'CPWRGIT_Token_Basic'
-String gitHubAdminTokenPlain        = ''
-String gitHubAdminTokenBasic        = ''
-
-String jenkinsUrl                   = 'http://192.168.96.133:8080'
-String jenkinsGitFlowFolder         = 'GitFlow'
-String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
-String jenkinsJobTemplate           = 'GitFlow_Template'
-String jenkinsJobName               = 'GitFlow_' + ispwApp.substring(ispwApp.length() - 1)
-
-def environmentSettings             = [
-        'CWCC': [
-            'lparName':                 'CWCC',
-            'hostName':                 'cwcc.bmc.com',
-            'hciConnectionId':          'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756',
-            'ispwRuntime':              'iccga',
-            'xgSsid':                   'MXG1',
-            'sonarProjectName':         "${ispwStream}_${ispwApp}",
-            'gitHubRepo':               "GitFlow_" + hostUserId, 
-            'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
-            'componentIds':             [
-                'CWXTCOB':              '5d5fea81180742000cf98888'
-            ]
-        ],
-        'CWC2': [
-            'lparName':                 'CWC2',                                    
-            'hostName':                 'cwc2.bmc.com',
-            'hciConnectionId':          '263438b6-f699-4373-be9f-378af3d28633',
-            'ispwRuntime':              'ic2ga',
-            'xgSsid':                   'MXG2',   
-            'sonarProjectName':         "${ispwStream}_${ispwApp}",
-            'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
-            'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
-            'componentIds':             [
-                'CWXTCOB':              '6046063418074200e864cb5e'
-            ]                                    
-        ]
-    ]
-
-def components                      = ['CWXTCOB']
-
 node{
+
+    // Pipeline Parameters
+    String hostUserId                   = HostUserId.toUpperCase()
+    String hostCredentialsId            = HostCredentialsId
+    String ispwApp                      = IspwApp.toUpperCase()
+    String cesCredentialsId             = CesCredentialsId
+    String gitCredentialsId             = GitCredentialsId
+    String codeCoverageRepo             = CodeCoverageRepo.toUpperCase()
+    String gitHubAdminUser              = GitHubAdminUser.toUpperCase()
+    String gitHubAdminPassword          = GitHubAdminPassword
+
+    // String defaultUtLevel               = DefaultUtLevel.toUpperCase()
+    // String defaultFtLevel               = DefaultFtLevel.toUpperCase()
+
+    String hostName 
+    String targetEnvironment            = 'CWCC'
+
+    String rootProjectFile              = "./.project"
+    String jenkinsfile                  = "./GitFlow.jenkinsfile"
+    String ispwConfigFile               = "./GenApp_MainframeCore/ispwconfig.yml"
+    String projectSettingsFile          = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
+    String sonarLintSettingsFile        = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
+
+    String istwStream                   = "GITFLOW"
+
+    String sonarServerUrl               = "http://192.168.96.169:9000" //"http://aus-bdc-sonarqube-cwcc.bmc.com:9000"        
+    String sonarQualityGateId           = "AYb96SGym7XD63sZxcew"
+    String sonarQubeTokenStore          = 'SonarQube_Token_Basic'
+    String sonarQubeToken               = ''
+
+    String repoTemplate                 = 'GitFlow_Template'
+
+    String gitHubAdminCredentialsPw     = 'CPWRGIT'
+    String gitHubAdminCredentialsTk     = 'CPWRGIT_GitHub_New'
+    String gitHubAdminTokenStore        = 'CPWRGIT_Token_Basic'
+    String gitHubAdminTokenPlain        = ''
+    String gitHubAdminTokenBasic        = ''
+
+    String jenkinsUrl                   = 'http://192.168.96.133:8080'
+    String jenkinsGitFlowFolder         = 'GitFlow'
+    String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
+    String jenkinsJobTemplate           = 'GitFlow_Template'
+    String jenkinsJobName               = 'GitFlow_' + ispwApp.substring(ispwApp.length() - 1)
+
+    def environmentSettings             = [
+            'CWCC': [
+                'lparName':                 'CWCC',
+                'hostName':                 'cwcc.bmc.com',
+                'hciConnectionId':          'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756',
+                'ispwRuntime':              'iccga',
+                'xgSsid':                   'MXG1',
+                'sonarProjectName':         "${ispwStream}_${ispwApp}",
+                'gitHubRepo':               "GitFlow_" + hostUserId, 
+                'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
+                'componentIds':             [
+                    'CWXTCOB':              '5d5fea81180742000cf98888'
+                ]
+            ],
+            'CWC2': [
+                'lparName':                 'CWC2',                                    
+                'hostName':                 'cwc2.bmc.com',
+                'hciConnectionId':          '263438b6-f699-4373-be9f-378af3d28633',
+                'ispwRuntime':              'ic2ga',
+                'xgSsid':                   'MXG2',   
+                'sonarProjectName':         "${ispwStream}_${ispwApp}",
+                'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
+                'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
+                'componentIds':             [
+                    'CWXTCOB':              '6046063418074200e864cb5e'
+                ]                                    
+            ]
+        ]
+
+    def components                      = ['CWXTCOB']
 
     checkPipelineCredentials(gitHubAdminCredentialsPw)
 //    extractEnvironmentCredentials()
