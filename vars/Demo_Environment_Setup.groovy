@@ -468,7 +468,7 @@ def cloneGitRepository(repo, credentials) {
         poll: false, 
         scm: [
             $class: 'GitSCM', 
-            branches: [[name: '*/main']], 
+            branches: [[name: '*/development']], 
             doGenerateSubmoduleConfigurations: false, 
             extensions: [], 
             submoduleCfg: [], 
