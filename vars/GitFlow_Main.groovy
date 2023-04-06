@@ -84,7 +84,7 @@ def initializeSettings(configFile, parms) {
 
     def settings = [:]
 
-    stage("Imitialization") {
+    stage("Initialization") {
 
         cleanWs()
 
@@ -93,10 +93,13 @@ def initializeSettings(configFile, parms) {
 echo "Temp Settings: " + tmpSettings.toString()
 
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
+
+echo "Demo Env: " + parms.demoEnvironment
+echo "Settings: " + settings.toString()
+
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
 
-echo "Settings: " + settings.toString()
  
         settings.demoEnvironment    = parms.demoEnvironment
         settings.hci.credentialsId  = parms.hostCredentialsId
