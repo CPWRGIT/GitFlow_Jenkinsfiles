@@ -595,10 +595,10 @@ def finalizeGitHub(repo, userid, token) {
         bat(returnStdout: true, script: 'git config user.name "CPWRGIT"')
 
         bat(returnStdout: true, script: 'git commit -a -m ' + message)
-        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} HEAD:main -f")
+        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} HEAD:development -f")
         
-        bat(returnStdout: true, script: 'git branch development')
-        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} refs/heads/development:refs/heads/development -f")
+        bat(returnStdout: true, script: 'git branch main')
+        bat(returnStdout: true, script: "git push  https://" + userid + ":" + token + "@github.com/CPWRGIT/${repo} refs/heads/development:refs/heads/main -f")
         bat(returnStdout: true, script: 'git tag -a v00.00.01 -m "Baseline Release"')
         bat(returnStdout: true, script: 'git remote set-url origin https://' + userid + ':' + token + "@github.com/CPWRGIT/${repo}.git")
         bat(returnStdout: true, script: "git push origin v00.00.01")
