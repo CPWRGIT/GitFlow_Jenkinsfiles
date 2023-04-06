@@ -156,28 +156,28 @@ node{
         }
     }
     
-    // stage("Modify TTT assets"){
+    stage("Modify TTT assets"){
 
     //     def vtContextFiles = findFiles(glob: '**/Tests/Unit/**/*.context')
 
-    //     def stringsList = [
-    //             ['${ispw_app_value}', ispwApp],
+        def stringsList = [
+                ['<ispw_application>', ispwApp]
+                // ,
     //             // ['${ispw_level_value}', DefaultUtLevel],
     //             // ['${ut_level}', DefaultUtLevel],
     //             // ['${ft_level}', DefaultFtLevel],
     //             [environmentSettings['CWCC'].tttExecutionEnvironment, environmentSettings[targetEnvironment].tttExecutionEnvironment]
-    //         ]
+            ]
 
-    //     vtContextFiles.each{
+        vtContextFiles.each{
 
-    //         println "Modifying file: " + it.path.toString()
+            println "Modifying file: " + it.path.toString()
 
-    //         def content = readFile(file: it.path)
+            def content = readFile(file: it.path)
             
-    //         replaceFileContent(it.path, stringsList)            
+            replaceFileContent(it.path, stringsList)            
 
-    //     }
-
+        }
     //     def nvtContextFiles = findFiles(glob: '**/Tests/Integration/**/*.context')
 
     //     stringsList = [
@@ -219,7 +219,7 @@ node{
     //         replaceFileContent(it.path, stringsList)            
 
     //     }
-    // }
+    }
 
     // stage("Modify JOB source files"){
 
