@@ -95,6 +95,7 @@ echo "Temp Settings: " + tmpSettings.toString()
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
 
 echo "Demo Env: " + parms.demoEnvironment
+echo "Exec Env List: " + tmpSettings.executionEnvironments.toString()
 echo "Settings: " + settings.toString()
 
         settings                    = addFolderNames(settings)
