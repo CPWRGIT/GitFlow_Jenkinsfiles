@@ -89,18 +89,9 @@ def initializeSettings(configFile, parms) {
         cleanWs()
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
-
-echo "Temp Settings: " + tmpSettings.toString()
-
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
-
-echo "Demo Env: " + parms.demoEnvironment
-echo "Exec Env List: " + tmpSettings.executionEnvironments.toString()
-echo "Settings: " + settings.toString()
-
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
-
  
         settings.demoEnvironment    = parms.demoEnvironment
         settings.hci.credentialsId  = parms.hostCredentialsId
@@ -298,13 +289,16 @@ def loadMainframeCode(Map settings) {
 
     stage("Mainframe Load") {    
 
+        def assignmentDescription = "Push to ${BRANCH_NAME}".toUpperCase()
+
         gitToIspwIntegration( 
             connectionId:       settings.hci.connectionId,
             credentialsId:      settings.hci.credentialsId,
             runtimeConfig:      settings.ispw.runtimeConfig,
             stream:             settings.ispw.stream,
             app:                settings.ispw.application, 
-            branchMapping:      'feature/** => FEAT,per-branch',
+            
+            branchMapping:      'feature/** => FEAT,custom,' + assignmentDescription,
             ispwConfigPath:     settings.ispw.configFile,
             gitCredentialsId:   settings.git.credentialsId,
             gitRepoUrl:         settings.git.repoUrl
