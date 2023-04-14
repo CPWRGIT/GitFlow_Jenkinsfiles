@@ -381,27 +381,20 @@ def createSandbox(settings) {
             "currentLevel":         "FEAT",
             "startingLevel":        "UNIT"
         }'''
-
-    try {
         
-        httpRequest(
-            consoleLogResponseBody:     true, 
-            customHeaders:              [
-                [maskValue: false,  name: 'content-type',   value: 'application/json'], 
-                [maskValue: true,   name: 'authorization',  value: cesToken], 
-            ], 
-            httpMode:                   'POST', 
-            ignoreSslErrors:            true, 
-            requestBody:                requestBody2, 
-            url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + '/tasks', 
-            validResponseCodes:         '201', 
-            wrapAsMultipart:            false
-        )
-    }
-    catch(exception) {
-        
-        error "Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause."
-    }
+    httpRequest(
+        consoleLogResponseBody:     true, 
+        customHeaders:              [
+            [maskValue: false,  name: 'content-type',   value: 'application/json'], 
+            [maskValue: true,   name: 'authorization',  value: cesToken], 
+        ], 
+        httpMode:                   'POST', 
+        ignoreSslErrors:            true, 
+        requestBody:                requestBody2, 
+        url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + '/tasks', 
+        validResponseCodes:         '201', 
+        wrapAsMultipart:            false
+    )
 }
 
 def loadMainframeCode(Map settings) {
