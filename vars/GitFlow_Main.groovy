@@ -44,7 +44,7 @@ def call(Map parms) {
 //          - create the Sandbox Assignment
 //          - Only run the SonarQube scan
 //      For any subsequent build run the full pipeline
-def runFeature(settings) {}
+def runFeature(settings) {
     if(BUILD_NUMBER == "1") {
 
         createSandbox(settings)
@@ -110,7 +110,7 @@ runRelease(settings) {
 
 
 def runBugFix(settings){
-
+    return
 }
 
 // For any other branch (development or main)
@@ -231,6 +231,7 @@ def deactivateSandboxFlag(settings) {
     //     data:       settings.ispwConfig,
     //     overwrite:  true
     // )
+    return
 }
 
 def cloneRepo(settings) {
