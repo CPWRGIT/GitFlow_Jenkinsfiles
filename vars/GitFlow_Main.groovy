@@ -384,7 +384,7 @@ def createSandbox(settings) {
 
     try {
         
-        httpResponse = httpRequest(
+        httpRequest(
             consoleLogResponseBody:     true, 
             customHeaders:              [
                 [maskValue: false,  name: 'content-type',   value: 'application/json'], 
@@ -402,8 +402,6 @@ def createSandbox(settings) {
         
         error "Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause."
     }
-
-    httpResponse        = null
 }
 
 def loadMainframeCode(Map settings) {
