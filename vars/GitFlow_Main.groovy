@@ -131,13 +131,8 @@ def initializeSettings(configFile, parms) {
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
 
-echo "Environment   : " + parms.demoEnvironment
-echo "TmpSettings   : " + tmpSettings.toString()
 
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
-
-echo "Settings      : " + settings.toString()
-
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
  
@@ -398,7 +393,7 @@ def createSandbox(settings) {
             httpMode:                   'POST', 
             ignoreSslErrors:            true, 
             requestBody:                requestBody, 
-            url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + 'tasks', 
+            url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + '/tasks', 
             validResponseCodes:         '201', 
             wrapAsMultipart:            false
         )
