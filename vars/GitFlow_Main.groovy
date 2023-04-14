@@ -48,7 +48,9 @@ def call(Map parms) {
 def runFeature(settings) {
     if(BUILD_NUMBER == "1") {
 
-        createSandbox(settings)
+        def sandboxId = createSandbox(settings)
+        
+        loadDummy(settings, sandboxId)
 
     } else {
 
@@ -331,7 +333,7 @@ def createSandbox(settings) {
 
     def assignmentDescription   = "Push to ${BRANCH_NAME}".toUpperCase()
     def cesToken                = extractToken(settings.ces.credentialsId)
-    def requestBody1            = '''{
+    def requestBody             = '''{
             "stream":               "''' + settings.ispw.stream         + '''",
             "subAppl":              "''' + settings.ispw.application    + '''",
             "application":          "''' + settings.ispw.application    + '''",
@@ -354,7 +356,7 @@ def createSandbox(settings) {
             ], 
             httpMode:                   'POST', 
             ignoreSslErrors:            true, 
-            requestBody:                requestBody1, 
+            requestBody:                requestBody, 
             url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments', 
             validResponseCodes:         '201', 
             wrapAsMultipart:            false
@@ -370,9 +372,12 @@ def createSandbox(settings) {
     httpResponse        = null
     jsonSlurper         = null
 
-    def assignmentId    = httpResp.assignmentId
+    return httpResp.assignmentId
+}
 
-    requestBody2        = '''{
+loadDummy(settings, sandboxId) {
+
+    requestBody         = '''{
             "stream":               "''' + settings.ispw.stream         + '''",
             "subAppl":              "''' + settings.ispw.application    + '''",
             "application":          "''' + settings.ispw.application    + '''",
@@ -390,7 +395,7 @@ def createSandbox(settings) {
         ], 
         httpMode:                   'POST', 
         ignoreSslErrors:            true, 
-        requestBody:                requestBody2, 
+        requestBody:                requestBody, 
         url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + '/tasks', 
         validResponseCodes:         '201', 
         wrapAsMultipart:            false
