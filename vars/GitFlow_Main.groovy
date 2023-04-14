@@ -369,7 +369,8 @@ def createSandbox(settings) {
     def httpResp        = jsonSlurper.parseText(httpResponse.getContent())
     httpResponse        = null
     jsonSlurper         = null
-
+    requestBody         = null
+    
     def assignmentId    = httpResp.assignmentId
 
     requestBody         = '''{
