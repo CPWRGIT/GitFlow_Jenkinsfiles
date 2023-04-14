@@ -10,74 +10,113 @@ def configFile
 def call(Map parms) {
 
     parms.demoEnvironment   = parms.demoEnvironment.toLowerCase()
-echo "Demo Environment: " + parms.demoEnvironment
-
     configFile              = './config/gitflow.yml'    
-
-    def settings = [:]
+    def settings            = [:]
 
     node {
 
-        settings    = initializeSettings(configFile, parms)
+        settings        = initializeSettings(configFile, parms)
 
         cloneRepo(settings)
 
-        settings    = addIspwConfigFileContent(settings)
+        settings        = addIspwConfigFileContent(settings)
 
-        // For a feature branch:
-        //      For the first build (NUILD_NUMBER == "1"), only run the SonarQube scan, i.e. skip the rest of the pipeline
-        //      For any subsequent buils run the full pipeline
-        if( BRANCH_NAME.startsWith("feature")   &&
-            BUILD_NUMBER != "1"                     ) {
+        def branchType = BRANCH_NAME.split('/')[0].toUpperCase()
 
-            def assignmentId
-
-            loadMainframeCode(settings)
-
-            assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
-
-            // Assignment ID == NULL means that no automtic build params file was found. This is the case when no mainframe components were changed.
-            //  Only if mainframe components were changed, mainframe builds or tests need to be run, and code coverage results need to be retrieved
-            if (assignmentId != null) {
-
-                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
-
-                runUnitTests(settings)
-
-                runIntegrationTests(settings)
-
-                getCodeCoverage(settings)
-            }
-
-            runSonarScan(settings)            
-        }
-        // For a release branch run the "Release" pipeline
-        else if(BRANCH_NAME.startsWith("release")) {
-
-            def releaseAssignmentId
-
-            settings = extendSettings(settings)
-
-            deactivateSandboxFlag(settings)
-
-            loadMainframeCode(settings.fromCommit, settings.toCommit, settings)
-
-            releaseAssignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
-
-            // Assignment ID == NULL means that no automtic build params file was found. This is the case when no mainframe components were changed.
-            //  Only if mainframe components were changed, a mainframe build needs to be run, and the release will be triggered
-            if (releaseAssignmentId != null) {
-
-                buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
-
-                startXlr(releaseAssignmentId, settings)
-            }
-        }
-        else {
-            
-            runSonarScan(settings)
+        switch(branchType) {
+            case "FEATURE":
+                runFeature(settings)
+                break
+            case "RELEASE":
+                runRelease(settings)
+                break
+            case "BUGFIX":
+                runBugFix(settings)
+                break
+            default:
+                runOther(settings)
         }
     }
+
+// For a feature branch:
+//      For the first build (BUILD_NUMBER == "1"),
+//          - create the Sandbox Assignment
+//          - Only run the SonarQube scan
+//      For any subsequent build run the full pipeline
+def runFeature(settings) {}
+    if(BUILD_NUMBER == "1") {
+
+        createSandbox(settings)
+
+    } else {
+
+        def assignmentId
+
+        loadMainframeCode(settings)
+
+        assignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
+
+        // Assignment ID == NULL means that no automtic build params file was found. This is the case when no mainframe components were changed.
+        //  Only if mainframe components were changed, mainframe builds or tests need to be run, and code coverage results need to be retrieved
+        if (assignmentId != null) {
+
+            buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
+
+            runUnitTests(settings)
+
+            runIntegrationTests(settings)
+
+            getCodeCoverage(settings)
+        }
+    }
+    
+    runSonarScan(settings)            
+}
+
+// For a release branch:
+//      For the first build (BUILD_NUMBER == "1"),
+//          - load code to mainframe
+//          - build the code
+//          - start Release
+//      For any subsequent build (bugfixes merged into release branch), only
+//          - load code to mainframe
+//          - build the code
+runRelease(settings) {
+
+    def releaseAssignmentId
+
+    settings = extendSettings(settings)
+
+    deactivateSandboxFlag(settings)
+
+    loadMainframeCode(settings.fromCommit, settings.toCommit, settings)
+
+    releaseAssignmentId = getAssignmentId(settings.ispw.automaticBuildFile)
+
+    // Assignment ID == NULL means that no automtic build params file was found. This is the case when no mainframe components were changed.
+    //  Only if mainframe components were changed, a mainframe build needs to be run, and the release will be triggered
+    if (releaseAssignmentId != null) {
+
+        buildMainframeCode(settings.hci.connectionId, settings.ces.credentialsId, settings.ispw.runtimeConfig)
+
+    }
+
+    if(BUILD_NUMBER == "1"){
+
+        startXlr(releaseAssignmentId, settings)
+    }
+}
+
+
+def runBugFix(settings){
+
+}
+
+// For any other branch (development or main)
+//      - Ony run SonarQube scan
+def runOther(settings) {
+
+    runSonarScan(settings)
 }
 
 def initializeSettings(configFile, parms) {
@@ -181,16 +220,16 @@ def extendSettings(settings) {
 }
 
 def deactivateSandboxFlag(settings) {
-    settings.ispwConfig.ispwApplication.sandbox = 'N'
-    echo "New ispwconfig.yml"
-    echo settings.ispwConfig.toString()
 
-    writeYaml(
-        file:       settings.ispw.configFile,
-        data:       settings.ispwConfig,
-        overwrite:  true
-    )
+    // settings.ispwConfig.ispwApplication.sandbox = 'N'
+    // echo "New ispwconfig.yml"
+    // echo settings.ispwConfig.toString()
 
+    // writeYaml(
+    //     file:       settings.ispw.configFile,
+    //     data:       settings.ispwConfig,
+    //     overwrite:  true
+    // )
 }
 
 def cloneRepo(settings) {
@@ -281,6 +320,83 @@ def determineCommitInfo() {
     commitInfo['toCommit'] = toCommit
 
     return commitInfo
+}
+
+def createSandbox(settings) {
+
+    def assignmentDescription   = "Push to ${BRANCH_NAME}".toUpperCase()
+    def cesToken                = extractToken(settings.ces.credentialsId)
+    def requestBody             = '''{
+            "stream":               "''' + settings.ispw.stream         + '''",
+            "subAppl":              "''' + settings.ispw.application    + '''",
+            "application":          "''' + settings.ispw.application    + '''",
+            "assignmentPrefix":     "''' + settings.ispw.application    + '''",
+            "defaultPath":          "UNIT",
+            "description":          "''' + assignmentDescription        + '''",
+            "owner":                "''' + settings.hci.user            + '''",
+            "sandboxJoinAtLevel":   "RLSE"
+        }'''
+    
+    def httpResponse
+
+    try {
+        
+        def httpResponse = httpRequest(
+            consoleLogResponseBody:     true, 
+            customHeaders:              [
+                [maskValue: false,  name: 'content-type',   value: 'application/json'], 
+                [maskValue: true,   name: 'authorization',  value: cesToken], 
+            ], 
+            httpMode:                   'POST', 
+            ignoreSslErrors:            true, 
+            requestBody:                requestBody, 
+            url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments', 
+            validResponseCodes:         '201', 
+            wrapAsMultipart:            false
+        )
+    }
+    catch(exception) {
+        
+        error "Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause."
+    }
+
+    def jsonSlurper     = new JsonSlurper()
+    def httpResp        = jsonSlurper.parseText(httpResponse.getContent())
+    httpResponse        = null
+    jsonSlurper         = null
+
+    def assignmentId    = httpResp.assignmentId
+
+    requestBody         = '''{
+            "stream":               "''' + settings.ispw.stream         + '''",
+            "subAppl":              "''' + settings.ispw.application    + '''",
+            "application":          "''' + settings.ispw.application    + '''",
+            "moduleName":           "DUMMY",
+            "moduleType":           "COB",
+            "currentLevel":         "FEAT",
+            "startingLevel":        "UNIT"
+        }'''
+
+    try {
+        
+        def httpResponse = httpRequest(
+            consoleLogResponseBody:     true, 
+            customHeaders:              [
+                [maskValue: false,  name: 'content-type',   value: 'application/json'], 
+                [maskValue: true,   name: 'authorization',  value: cesToken], 
+            ], 
+            httpMode:                   'POST', 
+            ignoreSslErrors:            true, 
+            requestBody:                requestBody, 
+            url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + 'tasks', 
+            validResponseCodes:         '201', 
+            wrapAsMultipart:            false
+        )
+    }
+    catch(exception) {
+        
+        error "Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause."
+    }
 }
 
 def loadMainframeCode(Map settings) {
