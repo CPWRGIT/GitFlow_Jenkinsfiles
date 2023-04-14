@@ -130,7 +130,14 @@ def initializeSettings(configFile, parms) {
         cleanWs()
 
         def tmpSettings             = readYaml(text: libraryResource(configFile))
+
+echo "Environment   : " + parms.demoEnvironment
+echo "TmpSettings   : " + tmpSettings.toString()
+
         settings                    = tmpSettings.executionEnvironments[parms.demoEnvironment]
+
+echo "Settings      : " + settings.toString()
+
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
  
