@@ -500,7 +500,7 @@ def buildMainframeCode(hostConnection, cesCredentialsId, runtimeConfig) {
             )
         }
         catch(Exception e) {
-            echo "[Error] - Error occurred during Build of Mainframe Code: \n" +
+            error "[Error] - Error occurred during Build of Mainframe Code: \n" +
                 e
         }
     }
