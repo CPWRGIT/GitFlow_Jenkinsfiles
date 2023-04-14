@@ -38,7 +38,6 @@ String gitHubAdminTokenStore        = 'CPWRGIT_Token_Basic'
 String gitHubAdminTokenPlain        = ''
 String gitHubAdminTokenBasic        = ''
 
-String jenkinsSourceUrl             = 'http://192.168.96.133:8080'
 String jenkinsGitFlowFolder         = 'GitFlow'
 String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
 String jenkinsJobTemplate           = 'GitFlow_Template'
@@ -53,7 +52,7 @@ def environmentSettings             = [
             'xgSsid':                   'MXG1',
             'sonarProjectName':         "${ispwStream}_${ispwApp}",
             'gitHubRepo':               "GitFlow_" + hostUserId, 
-            'jenkinsTargetUrl':         "http://192.168.96.133:8080",
+            'jenkinsUrl':               "http://192.168.96.133:8080",
             'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
             'componentIds':             [
                 'CWXTCOB':              '5d5fea81180742000cf98888'
@@ -67,7 +66,7 @@ def environmentSettings             = [
             'xgSsid':                   'MXG2',   
             'sonarProjectName':         "${ispwStream}_${ispwApp}",
             'gitHubRepo':               "GitFlow_" + ispwApp, 
-            'jenkinsTargetUrl':         "http://192.168.96.146:8080",            
+            'jenkinsUrl':               "http://192.168.96.146:8080",            
             'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
             'componentIds':             [
                 'CWXTCOB':              '6046063418074200e864cb5e'
@@ -281,7 +280,7 @@ node{
             httpMode:                   'GET', 
             outputFile:                 'job_config.xml', 
             responseHandle:             'NONE', 
-            url:                        jenkinsSourceUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + '/config.xml', 
+            url:                        environmentSettings[targetEnvironment].jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + '/config.xml', 
             wrapAsMultipart:            false
         )
 
@@ -297,7 +296,7 @@ node{
             httpMode:                   'POST', 
             responseHandle:             'NONE', 
             uploadFile:                 './job_config.xml', 
-            url:                        environmentSettings[targetEnvironment].jenkinsTargetUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
+            url:                        environmentSettings[targetEnvironment].jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
             wrapAsMultipart: false
         )
     }
