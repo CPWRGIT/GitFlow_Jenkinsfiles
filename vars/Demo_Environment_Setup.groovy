@@ -297,7 +297,7 @@ node{
             httpMode:                   'POST', 
             responseHandle:             'NONE', 
             uploadFile:                 './job_config.xml', 
-            url:                        jenkinsTargetUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
+            url:                        environmentSettings[targetEnvironment].jenkinsTargetUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
             wrapAsMultipart: false
         )
     }
