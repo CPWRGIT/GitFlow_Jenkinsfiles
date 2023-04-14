@@ -377,6 +377,7 @@ def createSandbox(settings) {
 
 def loadDummy(settings, sandboxId) {
 
+    def cesToken        = extractToken(settings.ces.credentialsId)
     requestBody         = '''{
             "stream":               "''' + settings.ispw.stream         + '''",
             "subAppl":              "''' + settings.ispw.application    + '''",
