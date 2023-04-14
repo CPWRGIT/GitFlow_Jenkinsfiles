@@ -14,7 +14,6 @@ String gitHubAdminPassword          = GitHubAdminPassword
 // String defaultFtLevel               = DefaultFtLevel.toUpperCase()
 
 String hostName 
-String targetEnvironment            = 'CWCC'
 
 String rootProjectFile              = "./.project"
 String jenkinsfile                  = "./GitFlow.jenkinsfile"
@@ -37,7 +36,7 @@ String gitHubAdminTokenStore        = 'CPWRGIT_Token_Basic'
 String gitHubAdminTokenPlain        = ''
 String gitHubAdminTokenBasic        = ''
 
-String jenkinsUrl                   = 'http://192.168.96.133:8080'
+String jenkinsSourceUrl             = 'http://192.168.96.133:8080'
 String jenkinsGitFlowFolder         = 'GitFlow'
 String jenkinsGitFlowAdminFolder    = 'Demo_Environment_Administration'
 String jenkinsJobTemplate           = 'GitFlow_Template'
@@ -52,6 +51,7 @@ def environmentSettings             = [
             'xgSsid':                   'MXG1',
             'sonarProjectName':         "${ispwStream}_${ispwApp}",
             'gitHubRepo':               "GitFlow_" + hostUserId, 
+            'jenkinsTargetUrl':         "http://192.168.96.133:8080",
             'tttExecutionEnvironment':  '5b508b8a787be73b59238d38',
             'componentIds':             [
                 'CWXTCOB':              '5d5fea81180742000cf98888'
@@ -65,6 +65,7 @@ def environmentSettings             = [
             'xgSsid':                   'MXG2',   
             'sonarProjectName':         "${ispwStream}_${ispwApp}",
             'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
+            'jenkinsTargetUrl':         "http://192.168.96.146:8080",            
             'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
             'componentIds':             [
                 'CWXTCOB':              '6046063418074200e864cb5e'
@@ -77,7 +78,6 @@ def components                      = ['CWXTCOB']
 node{
 
     checkPipelineCredentials(gitHubAdminCredentialsPw)
-//    extractEnvironmentCredentials()
 
     gitHubAdminTokenPlain   = getGitHubAdminTokenPlain(gitHubAdminCredentialsTk)
 
@@ -123,6 +123,7 @@ node{
             ],
             [jenkinsfile, 
                 [
+                    ['<demoEnvironment>', targetEnvironment],
                     ['<hostCredentials>', hostCredentialsId], 
                     ['<cesCredentials>', cesCredentialsId],
                     ['<gitRepoUrl>', "https://github.com/CPWRGIT/${gitHubRepo}.git"],
@@ -273,7 +274,7 @@ node{
             httpMode:                   'GET', 
             outputFile:                 'job_config.xml', 
             responseHandle:             'NONE', 
-            url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + '/config.xml', 
+            url:                        jenkinsSourceUrl + '/job/' + jenkinsGitFlowFolder + '/job/' + jenkinsGitFlowAdminFolder + '/job/' + jenkinsJobTemplate + '/config.xml', 
             wrapAsMultipart:            false
         )
 
@@ -289,7 +290,7 @@ node{
             httpMode:                   'POST', 
             responseHandle:             'NONE', 
             uploadFile:                 './job_config.xml', 
-            url:                        jenkinsUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
+            url:                        jenkinsTargetUrl + '/job/' + jenkinsGitFlowFolder + '/createItem?name=' + jenkinsJobName, 
             wrapAsMultipart: false
         )
     }
