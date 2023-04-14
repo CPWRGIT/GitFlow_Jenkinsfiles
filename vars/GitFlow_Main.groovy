@@ -375,7 +375,7 @@ def createSandbox(settings) {
     return httpResp.assignmentId
 }
 
-loadDummy(settings, sandboxId) {
+def loadDummy(settings, sandboxId) {
 
     requestBody         = '''{
             "stream":               "''' + settings.ispw.stream         + '''",
@@ -396,7 +396,7 @@ loadDummy(settings, sandboxId) {
         httpMode:                   'POST', 
         ignoreSslErrors:            true, 
         requestBody:                requestBody, 
-        url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + '/tasks', 
+        url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + sandboxId + '/tasks', 
         validResponseCodes:         '201', 
         wrapAsMultipart:            false
     )
