@@ -37,6 +37,7 @@ def call(Map parms) {
                 runOther(settings)
         }
     }
+}
 
 // For a feature branch:
 //      For the first build (BUILD_NUMBER == "1"),
