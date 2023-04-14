@@ -9,6 +9,7 @@ String gitCredentialsId             = GitCredentialsId
 String codeCoverageRepo             = CodeCoverageRepo.toUpperCase()
 String gitHubAdminUser              = GitHubAdminUser.toUpperCase()
 String gitHubAdminPassword          = GitHubAdminPassword
+String targetEnvironment            = TargetEnvironment
 
 // String defaultUtLevel               = DefaultUtLevel.toUpperCase()
 // String defaultFtLevel               = DefaultFtLevel.toUpperCase()
@@ -19,7 +20,8 @@ String rootProjectFile              = "./.project"
 String jenkinsfile                  = "./GitFlow.jenkinsfile"
 String ispwConfigFile               = "./GenApp_MainframeCore/ispwconfig.yml"
 String projectSettingsFile          = "./GenApp_MainframeCore/.settings/GenApp_MainframeCore.prefs"
-String sonarLintSettingsFile        = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
+String sonarLintSettingsFileMf      = "./GenApp_MainframeCore/.settings/org.sonarlint.eclipse.core.prefs"
+String sonarLintSettingsFileDist    = "./GenApp_WebServer/.settings/org.sonarlint.eclipse.core.prefs"
 
 String ispwStream                   = "GITFLOW"
 
@@ -64,7 +66,7 @@ def environmentSettings             = [
             'ispwRuntime':              'ic2ga',
             'xgSsid':                   'MXG2',   
             'sonarProjectName':         "${ispwStream}_${ispwApp}",
-            'gitHubRepo':               "GitFlow_" + hostUserId + '_CWC2', 
+            'gitHubRepo':               "GitFlow_" + ispwApp, 
             'jenkinsTargetUrl':         "http://192.168.96.146:8080",            
             'tttExecutionEnvironment':  '5c519facfba8720a90ccc645',
             'componentIds':             [
@@ -138,7 +140,12 @@ node{
                     ['<ispwApplication>', ispwApp],    
                 ]
             ],
-            [sonarLintSettingsFile,
+            [sonarLintSettingsFileMf,
+                [
+                    ['<projectName>', sonarProjectName]
+                ]
+            ],
+            [sonarLintSettingsFileDist,
                 [
                     ['<projectName>', sonarProjectName]
                 ]
