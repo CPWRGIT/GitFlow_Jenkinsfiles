@@ -331,7 +331,7 @@ def createSandbox(settings) {
 
     def assignmentDescription   = "Push to ${BRANCH_NAME}".toUpperCase()
     def cesToken                = extractToken(settings.ces.credentialsId)
-    def requestBody             = '''{
+    def requestBody1            = '''{
             "stream":               "''' + settings.ispw.stream         + '''",
             "subAppl":              "''' + settings.ispw.application    + '''",
             "application":          "''' + settings.ispw.application    + '''",
@@ -354,7 +354,7 @@ def createSandbox(settings) {
             ], 
             httpMode:                   'POST', 
             ignoreSslErrors:            true, 
-            requestBody:                requestBody, 
+            requestBody:                requestBody1, 
             url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments', 
             validResponseCodes:         '201', 
             wrapAsMultipart:            false
@@ -369,11 +369,10 @@ def createSandbox(settings) {
     def httpResp        = jsonSlurper.parseText(httpResponse.getContent())
     httpResponse        = null
     jsonSlurper         = null
-    requestBody         = null
-    
+
     def assignmentId    = httpResp.assignmentId
 
-    requestBody         = '''{
+    requestBody2        = '''{
             "stream":               "''' + settings.ispw.stream         + '''",
             "subAppl":              "''' + settings.ispw.application    + '''",
             "application":          "''' + settings.ispw.application    + '''",
@@ -393,7 +392,7 @@ def createSandbox(settings) {
             ], 
             httpMode:                   'POST', 
             ignoreSslErrors:            true, 
-            requestBody:                requestBody, 
+            requestBody:                requestBody2, 
             url:                        settings.ces.url + '/ispw/' + settings.ispw.runtimeConfig + '/assignments/' + assignmentId + '/tasks', 
             validResponseCodes:         '201', 
             wrapAsMultipart:            false
