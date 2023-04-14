@@ -46,11 +46,15 @@ def call(Map parms) {
 //          - Only run the SonarQube scan
 //      For any subsequent build run the full pipeline
 def runFeature(settings) {
+
+    echo "[Info] - Running build for Feature branch ${BRANCH_NAME}."
     if(BUILD_NUMBER == "1") {
 
+        echo "[Info] - First Build will create the Sandbox Assignment."
         def sandboxId = createSandbox(settings)
         
         loadDummy(settings, sandboxId)
+        echo "[Info] - Sandbox Assignment ${sandboxId} has been created."
 
     } else {
 
@@ -311,19 +315,19 @@ def determineCommitInfo() {
     def commitInfo  = [:]
 
     def currentTag  = bat(returnStdout: true, script: 'git describe --tags').split("\n")[2].trim()
-    echo "Determined Current Tag: " + currentTag
+    // echo "Determined Current Tag: " + currentTag
     commitInfo['currentTag'] = currentTag
 
     def previousTag = bat(returnStdout: true, script: 'git describe --abbrev=0 --tags ' + currentTag + '~').split("\n")[2].trim()
-    echo "Determined Previous Tag: " + previousTag
+    // echo "Determined Previous Tag: " + previousTag
     commitInfo['previousTag'] = previousTag
 
     def fromCommit  = bat(returnStdout: true, script: 'git rev-list -1 ' + previousTag).split("\n")[2].trim()
-    echo "Determined From Commit: " + fromCommit
+    // echo "Determined From Commit: " + fromCommit
     commitInfo['fromCommit'] = fromCommit
 
     def toCommit = bat(returnStdout: true, script: 'git rev-parse --verify HEAD')split("\n")[2].trim()
-    echo "Determined To Commit: " + toCommit
+    // echo "Determined To Commit: " + toCommit
     commitInfo['toCommit'] = toCommit
 
     return commitInfo
@@ -364,7 +368,7 @@ def createSandbox(settings) {
     }
     catch(exception) {
         
-        error "Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause."
+        error "[Error] - Unexpected http response code. " + exception.toString() + ". See previous log messages to determine cause."
     }
 
     def jsonSlurper     = new JsonSlurper()
@@ -724,14 +728,14 @@ def startXlr(assignmentId, settings) {
         def ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
         def cesToken            = extractToken(settings.ces.credentialsId)
 
-        echo "Start XLR with: "
-        echo 'CES_Token: ' + cesToken
-        echo 'ISPW_Runtime: ' + settings.ispw.runtimeConfig
-        echo 'ISPW_Application: ' + settings.ispw.application
-        echo 'ISPW_Owner: ' + settings.hci.user
-        echo 'ISPW_Assignment: ' + assignmentId
-        echo 'Jenkins_CES_Credentials: ' + settings.ces.credentialsId
-        echo 'Release Number: ' + ispwReleaseNumber
+        echo "[Info] - Starting XLR with:\n" +
+            '   CES_Token: ' + cesToken + "\n" +
+            '   ISPW_Runtime: ' + settings.ispw.runtimeConfig + "\n" +
+            '   ISPW_Application: ' + settings.ispw.application + "\n" +
+            '   ISPW_Owner: ' + settings.hci.user + "\n" +
+            '   ISPW_Assignment: ' + assignmentId + "\n" +
+            '   Jenkins_CES_Credentials: ' + settings.ces.credentialsId + "\n" +
+            '   Release Number: ' + ispwReleaseNumber
 
         xlrCreateRelease(
             releaseTitle:       "GitFlow - Release for ${settings.hci.user}", 
