@@ -89,7 +89,7 @@ def runFeature(settings) {
 //      For any subsequent build (bugfixes merged into release branch), only
 //          - load code to mainframe
 //          - build the code
-runRelease(settings) {
+def runRelease(settings) {
 
     def releaseAssignmentId
 
