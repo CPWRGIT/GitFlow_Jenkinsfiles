@@ -78,85 +78,58 @@ executionEnvironments:
           folder:               './Coverage'
           file:                 'CodeCoverage.xml'    
   cwcc:
-    environment:
-      hci:
-        connectionId:           de2ad7c3-e924-4dc2-84d5-d0c3afd3e756
-      ces:
-        url:                    http://cwcc.bmc.com:2020
-      sonar:
-        scanner:                scanner
-        server:                 localhost
-      xlr:
-        template:               'GITFLOW_CWCC'
+    hci:
+      connectionId:           de2ad7c3-e924-4dc2-84d5-d0c3afd3e756
+      hostName:               'cwcc.bmc.com'
+      hostPort:               '16196'
+    ces:
+      url:                    http://cwcc.bmc.com:2020
+    sonar:
+      scanner:                scanner
+      server:                 localhost
+      cobolSuffixes:          'cbl,testsuite,testscenario,stub,result,scenario,context'
+      copySuffixes:           'cpy'
+    xlr:
+      template:               'GitFlow/GitFlow_Release'
     ispw:
-      libraryQualifier:         ''    
+      libraryQualifier:         'SALESSUP'    
       mfProject:
         rootFolder:             './GenApp_MainframeCore'
         sourcesFolder:          '/Sources'
       configFile:
         folder:                 './GenApp_MainframeCore'
         name:                   'ispwconfig.yml'
-      impactScanFile:           './git2ispw/impact_scan.jcl'
       automaticBuildFile:       './automaticBuildParams.txt'
       changedProgramsFile:      './changedPrograms.json'
       branchInfo:
-        feature/FT1:
-          ispwLevel:            FT1
+        feature:
+          ispwLevel:            FEAT
           mapRule:              per-branch
-        feature/FT2:
-          ispwLevel:            FT2
-          mapRule:              per-branch
-        feature/FT3:
-          ispwLevel:            FT3
-          mapRule:              per-branch
-        feature/FT4:
-          ispwLevel:            FT4
-          mapRule:              per-branch
-        bugfix:
+        hotfix:
           ispwLevel:            HFIX
           mapRule:              per-branch
-        development:
-          ispwLevel:            DEVL
+        release:
+          ispwLevel:            RLSE
           mapRule:              per-branch
         main:
-          ispwLevel:            MAIN
+          ispwLevel:            PROD
           mapRule:              per-branch
     ttt:
       loadLibQualfiers:
-        FT1:
+        FEAT:
           level1:               FT1
           level2:               FT1
           level3:               DEVL
           level4:               MAIN
-        FT2:
+        RLSE:
           level1:               FT2
           level2:               FT2
           level3:               DEVL
           level4:               MAIN
-        FT3:
+        HFIX:
           level1:               FT3
           level2:               FT3
           level3:               DEVL
-          level4:               MAIN
-        FT4:
-          level1:               FT4
-          level2:               FT4
-          level3:               DEVL
-          level4:               MAIN
-        HFIX:
-          level1:               HFIX
-          level2:               HFIX
-          level3:               HFIX
-          level4:               MAIN
-        DEVL:
-          level1:               DEVL
-          level2:               DEVL
-          level3:               DEVL
-          level4:               MAIN
-        MAIN:
-          level1:               MAIN
-          level2:               MAIN
-          level3:               MAIN
           level4:               MAIN
       folders:               
         root:                   'Tests'
@@ -166,7 +139,85 @@ executionEnvironments:
         virtualized:            5b508b8a787be73b59238d38
         nonVirtualized:
           batch:                5b508b8a787be73b59238d38
-          cics:                 5b5f2a71787be73b59238d7b
+#          cics:                 5b5f2a71787be73b59238d7b
+      results:
+        sonar:
+          folder:               './TTTSonar'    
+          fileNameBase:         'cli.suite.sonar.xml'
+        jUnit:
+          folder:               '**/TTTUnit'
+          fileNameBase:         'cli.suite.junit.xml'
+    coco:  
+      ccThreshold:              '70'
+      results:
+        sonar:
+          folder:               './Coverage'
+          file:                 'CodeCoverage.xml'    
+  cwc2_on_cwcc:
+    hci:
+      connectionId:           263438b6-f699-4373-be9f-378af3d28633 #38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4
+      hostName:               'cwc2.bmc.com'
+      hostPort:               '16196'
+    ces:
+      url:                    http://cwc2.bmc.com:2020
+    sonar:
+      scanner:                scanner
+      server:                 localhost
+      cobolSuffixes:          'cbl,testsuite,testscenario,stub,result,scenario,context'
+      copySuffixes:           'cpy'
+    xlr:
+      template:               'GitFlow/GitFlow_Release'
+    jenkins:
+      cliPath:                'C:\WB_CLI_201401' #'C:/TopazCLI201401'
+    ispw:
+      libraryQualifier:         'SALESSUP'
+      mfProject:
+        rootFolder:             './GenApp_MainframeCore'
+        sourcesFolder:          '/Sources'
+      configFile:
+        folder:                 './GenApp_MainframeCore'
+        name:                   'ispwconfig.yml'
+      automaticBuildFile:       './automaticBuildParams.txt'
+      changedProgramsFile:      './changedPrograms.json'
+      branchInfo:
+        feature:
+          ispwLevel:            FEAT
+          mapRule:              per-branch
+        hotfix:
+          ispwLevel:            HFIX
+          mapRule:              per-branch
+        release:
+          ispwLevel:            RLSE
+          mapRule:              per-branch
+        main:
+          ispwLevel:            PROD
+          mapRule:              per-branch
+    ttt:
+      loadLibQualfiers:
+        FEAT:
+          level1:               FT1
+          level2:               FT1
+          level3:               DEVL
+          level4:               MAIN
+        RLSE:
+          level1:               FT2
+          level2:               FT2
+          level3:               DEVL
+          level4:               MAIN
+        HFIX:
+          level1:               FT3
+          level2:               FT3
+          level3:               DEVL
+          level4:               MAIN
+      folders:               
+        root:                   'Tests'
+        virtualizedTests:       'Unit'
+        nonVirtualizedTests:    'Integration'
+      environmentIds:
+        virtualized:            5b508b8a787be73b59238d38 #5c519facfba8720a90ccc645
+        nonVirtualized:
+          batch:                5b508b8a787be73b59238d38 #5c519facfba8720a90ccc645
+#          cics:                 5c51a46afba8720a90ccc64d
       results:
         sonar:
           folder:               './TTTSonar'    
