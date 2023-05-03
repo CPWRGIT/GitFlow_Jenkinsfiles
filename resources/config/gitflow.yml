@@ -156,10 +156,10 @@ executionEnvironments:
   cwc2_on_cwcc:
     hci:
       connectionId:           263438b6-f699-4373-be9f-378af3d28633 #38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4
-      hostName:               '198.147.191.82' #'cwc2.bmc.com'
+      hostName:               'aus-bdc-cwc2.bmc.com' #'cwc2.bmc.com'
       hostPort:               '16196'
     ces:
-      url:                    http://198.147.191.82:2020 #http://cwc2.bmc.com:2020
+      url:                    http://aus-bdc-cwc2.bmc.com:2020 #http://cwc2.bmc.com:2020
     sonar:
       scanner:                scanner
       server:                 localhost
