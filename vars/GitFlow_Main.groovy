@@ -142,6 +142,10 @@ def initializeSettings(configFile, parms) {
         settings                    = addFolderNames(settings)
         settings                    = addCoCoParms(settings)
  
+        if(!(parms.featureLoadLib == null)) {
+            settings.ttt.featureLoadLib = parms.featureLoadLib    
+        }
+
         settings.demoEnvironment    = parms.demoEnvironment
         settings.hci.credentialsId  = parms.hostCredentialsId
         settings.ces.credentialsId  = parms.cesCredentialsId
@@ -517,6 +521,14 @@ def runUnitTests(Map settings) {
 
         echo "[Info] - Execute Unit Tests."
 
+        def loadLibName
+
+        if (!(settings.ttt.featureLoadLib == null)) {
+            loadLibName = settings.ttt.featureLoadLib
+        } else {
+            loadLibName = settings.ispw.libraryQualifier + '.' + settings.ispw.application  + '.' + 'FEAT.LOAD'
+        }
+
         totaltest(
             connectionId:                       settings.hci.connectionId,
             serverUrl:                          settings.ces.url, 
@@ -535,7 +547,7 @@ def runUnitTests(Map settings) {
             createReport:                       true, 
             createResult:                       true, 
             createSonarReport:                  true,
-            contextVariables:                   '"load_lib=SALESSUP.GFLD.FEAT.LOAD"',
+            contextVariables:                   '"load_lib=' + loadLibName + '"',
             collectCodeCoverage:                true,
             collectCCRepository:                settings.coco.repo,
             collectCCSystem:                    settings.coco.systemId,
