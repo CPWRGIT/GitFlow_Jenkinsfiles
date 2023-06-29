@@ -186,6 +186,7 @@ def addIspwConfigFileContent(settings)  {
     settings.ispw.runtimeConfig = ispwConfig.ispwApplication.runtimeConfig
     settings.ispw.stream        = ispwConfig.ispwApplication.stream
     settings.ispw.application   = ispwConfig.ispwApplication.application
+    settings.ispw.appPrefix     = ispwConfig.ispwApplication.assignmentPrefix
     settings.ispw.appQualifier  = settings.ispw.libraryQualifier + '.' + settings.ispw.application
 
     settings.sonar.projectName  = settings.ispw.stream + "_" + settings.ispw.application
@@ -342,7 +343,7 @@ def createSandbox(settings) {
             "stream":               "''' + settings.ispw.stream         + '''",
             "subAppl":              "''' + settings.ispw.application    + '''",
             "application":          "''' + settings.ispw.application    + '''",
-            "assignmentPrefix":     "''' + settings.ispw.application    + '''",
+            "assignmentPrefix":     "''' + settings.ispw.appPrefix      + '''",
             "defaultPath":          "UNIT",
             "description":          "''' + assignmentDescription        + '''",
             "owner":                "''' + settings.hci.user            + '''",
