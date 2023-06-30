@@ -14,7 +14,7 @@ executionEnvironments:
     xlr:
       template:               'GitFlow/GitFlow_Release'
     jenkins:
-      cliPath:                'C:/TopazCLI201401'
+      cliPath:                'C:/WorkbenchCLI201501'
     ispw:
       libraryQualifier:         'SALESSUP'
       mfProject:

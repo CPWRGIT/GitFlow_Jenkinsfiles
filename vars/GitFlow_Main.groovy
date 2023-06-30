@@ -186,6 +186,7 @@ def addIspwConfigFileContent(settings)  {
     settings.ispw.runtimeConfig = ispwConfig.ispwApplication.runtimeConfig
     settings.ispw.stream        = ispwConfig.ispwApplication.stream
     settings.ispw.application   = ispwConfig.ispwApplication.application
+    settings.ispw.appPrefix     = ispwConfig.ispwApplication.assignmentPrefix
     settings.ispw.appQualifier  = settings.ispw.libraryQualifier + '.' + settings.ispw.application
 
     settings.sonar.projectName  = settings.ispw.stream + "_" + settings.ispw.application
@@ -339,10 +340,10 @@ def createSandbox(settings) {
     def assignmentDescription   = "Push to ${BRANCH_NAME}".toUpperCase()
     def cesToken                = extractToken(settings.ces.credentialsId)
     def requestBody             = '''{
-            "stream":               "''' + settings.ispw.stream             + '''",
-            "subAppl":              "''' + settings.ispw.application        + '''",
-            "application":          "''' + settings.ispw.application        + '''",
-            "assignmentPrefix":     "''' + settings.ispw.assignmentPrefix   + '''",
+            "stream":               "''' + settings.ispw.stream         + '''",
+            "subAppl":              "''' + settings.ispw.application    + '''",
+            "application":          "''' + settings.ispw.application    + '''",
+            "assignmentPrefix":     "''' + settings.ispw.appPrefix      + '''",
             "defaultPath":          "UNIT",
             "description":          "''' + assignmentDescription            + '''",
             "owner":                "''' + settings.hci.user                + '''",
@@ -454,7 +455,7 @@ def loadMainframeCode(String fromCommit, String toCommit, Map settings) {
                 '-ispwServerStream ' + settings.ispw.stream + ' ' +
                 '-ispwServerApp ' + settings.ispw.application + ' ' +
                 '-ispwCheckoutLevel RLSE ' +
-                '-assignmentPrefix ' + settings.ispw.assignmentPrefix + ' ' +
+                '-assignmentPrefix ' + settings.ispw.appPrefix + ' ' +
                 '-ispwConfigPath ' + settings.ispw.configFile + ' ' +
                 '-ispwContainerCreation per-branch ' +
                 '-gitUsername "' + settings.git.user + '" ' +
