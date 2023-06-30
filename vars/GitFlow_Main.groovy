@@ -339,13 +339,13 @@ def createSandbox(settings) {
     def assignmentDescription   = "Push to ${BRANCH_NAME}".toUpperCase()
     def cesToken                = extractToken(settings.ces.credentialsId)
     def requestBody             = '''{
-            "stream":               "''' + settings.ispw.stream         + '''",
-            "subAppl":              "''' + settings.ispw.application    + '''",
-            "application":          "''' + settings.ispw.application    + '''",
-            "assignmentPrefix":     "''' + settings.ispw.application    + '''",
+            "stream":               "''' + settings.ispw.stream             + '''",
+            "subAppl":              "''' + settings.ispw.application        + '''",
+            "application":          "''' + settings.ispw.application        + '''",
+            "assignmentPrefix":     "''' + settings.ispw.assignmentPrefix   + '''",
             "defaultPath":          "UNIT",
-            "description":          "''' + assignmentDescription        + '''",
-            "owner":                "''' + settings.hci.user            + '''",
+            "description":          "''' + assignmentDescription            + '''",
+            "owner":                "''' + settings.hci.user                + '''",
             "sandboxJoinAtLevel":   "RLSE"
         }'''
     
@@ -454,6 +454,7 @@ def loadMainframeCode(String fromCommit, String toCommit, Map settings) {
                 '-ispwServerStream ' + settings.ispw.stream + ' ' +
                 '-ispwServerApp ' + settings.ispw.application + ' ' +
                 '-ispwCheckoutLevel RLSE ' +
+                '-assignmentPrefix ' + settings.ispw.assignmentPrefix + ' ' +
                 '-ispwConfigPath ' + settings.ispw.configFile + ' ' +
                 '-ispwContainerCreation per-branch ' +
                 '-gitUsername "' + settings.git.user + '" ' +
