@@ -725,71 +725,114 @@ def getCodeCoverageParm(settings) {
     return codeCoverageParm
 }
 
-def startXlr(assignmentId, settings) {
+def startReleaseProcess(assignmentId, settings) {
 
     stage("Start Release") {
         def ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
-        def cesToken            = extractToken(settings.ces.credentialsId)
 
-        echo "[Info] - Starting XLR with:\n" +
-            '   CES_Token: ' + cesToken + "\n" +
-            '   ISPW_Runtime: ' + settings.ispw.runtimeConfig + "\n" +
-            '   ISPW_Application: ' + settings.ispw.application + "\n" +
-            '   ISPW_Owner: ' + settings.hci.user + "\n" +
-            '   ISPW_Assignment: ' + assignmentId + "\n" +
-            '   Jenkins_CES_Credentials: ' + settings.ces.credentialsId + "\n" +
-            '   Release Number: ' + ispwReleaseNumber
-
-        xlrCreateRelease(
-            releaseTitle:       "GitFlow - Release for ${settings.hci.user}", 
-            serverCredentials:  'admin', 
-            startRelease:       true, 
-            template:           'GitFlow/GitFlow_Release', 
-            variables: [
-                [
-                    propertyName:   'CES_Token', 
-                    propertyValue:  cesToken
-                ], 
-                [
-                    propertyName:   'ISPW_Release_Number', 
-                    propertyValue:  ispwReleaseNumber
-                ], 
-                [
-                    propertyName:   'ISPW_Assignment', 
-                    propertyValue:  assignmentId
-                ], 
-                [
-                    propertyName:   'ISPW_Runtime', 
-                    propertyValue:  settings.ispw.runtimeConfig
-                ], 
-                [
-                    propertyName:   'ISPW_Application', 
-                    propertyValue:  settings.ispw.application
-                ], 
-                [
-                    propertyName:   'ISPW_Owner', 
-                    propertyValue:  settings.hci.user
-                ],
-                [
-                    propertyName:   'Git_Tag', 
-                    propertyValue:  settings.currentTag
-                ],
-                [
-                    propertyName:   'Git_Branch', 
-                    propertyValue:  BRANCH_NAME
-                ],
-                [
-                    propertyName: 'Jenkins_CES_Credentials', 
-                    propertyValue: settings.ces.credentialsId
-                ],
-                [
-                    propertyName: 'Jenkins_Git_Credentials', 
-                    propertyValue: settings.git.credentialsId
-                ] 
-            ]
-        )    
+        build(
+            job: '../Demo_Workflow/Run_Release',
+            wait: false,  
+            parameters: [
+                string(
+                    name:   'ISPW_Application', 
+                    value:  settings.ispw.application
+                ), 
+                string(
+                    name:   'ISPW_Assignment', 
+                    value:  assignmentId
+                ), 
+                string(
+                    name:   'ISPW_Owner_Id', 
+                    value:  settings.hci.user 
+                ), 
+                string(
+                    name:   'ISPW_Release', 
+                    value:  ispwReleaseNumber
+                ), 
+                string(
+                    name:   'Host_Connection', 
+                    value:  settings.hci.connectionId
+                ), 
+                string(
+                    name:   'Jenkins_CES_Credentials', 
+                    value: settings.ces.credentialsId
+                ), 
+                string(
+                    name:   'ISPW_Runtime_Config', 
+                    value:  settings.ispw.runtimeConfig
+                )
+            ], 
+            waitForStart: true
+        )
     }
 }
+
+// def startXlr(assignmentId, settings) {
+
+//     stage("Start Release") {
+//         def ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
+//         def cesToken            = extractToken(settings.ces.credentialsId)
+
+//         echo "[Info] - Starting XLR with:\n" +
+//             '   CES_Token: ' + cesToken + "\n" +
+//             '   ISPW_Runtime: ' + settings.ispw.runtimeConfig + "\n" +
+//             '   ISPW_Application: ' + settings.ispw.application + "\n" +
+//             '   ISPW_Owner: ' + settings.hci.user + "\n" +
+//             '   ISPW_Assignment: ' + assignmentId + "\n" +
+//             '   Jenkins_CES_Credentials: ' + settings.ces.credentialsId + "\n" +
+//             '   Release Number: ' + ispwReleaseNumber
+
+//         xlrCreateRelease(
+//             releaseTitle:       "GitFlow - Release for ${settings.hci.user}", 
+//             serverCredentials:  'admin', 
+//             startRelease:       true, 
+//             template:           'GitFlow/GitFlow_Release', 
+//             variables: [
+//                 [
+//                     propertyName:   'CES_Token', 
+//                     propertyValue:  cesToken
+//                 ], 
+//                 [
+//                     propertyName:   'ISPW_Release_Number', 
+//                     propertyValue:  ispwReleaseNumber
+//                 ], 
+//                 [
+//                     propertyName:   'ISPW_Assignment', 
+//                     propertyValue:  assignmentId
+//                 ], 
+//                 [
+//                     propertyName:   'ISPW_Runtime', 
+//                     propertyValue:  settings.ispw.runtimeConfig
+//                 ], 
+//                 [
+//                     propertyName:   'ISPW_Application', 
+//                     propertyValue:  settings.ispw.application
+//                 ], 
+//                 [
+//                     propertyName:   'ISPW_Owner', 
+//                     propertyValue:  settings.hci.user
+//                 ],
+//                 [
+//                     propertyName:   'Git_Tag', 
+//                     propertyValue:  settings.currentTag
+//                 ],
+//                 [
+//                     propertyName:   'Git_Branch', 
+//                     propertyValue:  BRANCH_NAME
+//                 ],
+//                 [
+//                     propertyName: 'Jenkins_CES_Credentials', 
+//                     propertyValue: settings.ces.credentialsId
+//                 ],
+//                 [
+//                     propertyName: 'Jenkins_Git_Credentials', 
+//                     propertyValue: settings.git.credentialsId
+//                 ] 
+//             ]
+//         )    
+//     }
+// }
 
 def determineIspwReleaseNumber(tag) {
 
