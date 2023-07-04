@@ -111,7 +111,7 @@ def runRelease(settings) {
 
     if(BUILD_NUMBER == "1"){
 
-        startXlr(releaseAssignmentId, settings)
+        startReleaseProcess(releaseAssignmentId, settings)
     }
 }
 
