@@ -1,28 +1,34 @@
 node {
     def continueRelease         = false
 
-    stage("Manual Intervention"){
-
-        input 'Manual Intervention Point for Demo Purposes'
-
-    }
-
     echo "Paramters"
     echo 'ISPW_Application          : ' + ISPW_Application        
     echo 'ISPW_Assignment           : ' + ISPW_Assignment         
     echo 'ISPW_Owner_Id             : ' + ISPW_Owner_Id            
-    echo 'ISPW_Release              : ' + ISPW_Release             
+    echo 'ISPW_App_Prefix           : ' + ISPW_App_Prefix
+    echo 'Git_Release_Tag           : ' + Git_Release_Tag
     echo 'Host_Connection           : ' + Host_Connection          
     echo 'Jenkins_CES_Credentials   : ' + Jenkins_CES_Credentials  
     echo 'ISPW_Runtime_Config       : ' + ISPW_Runtime_Config     
     echo 'Git_Repo_Url              : ' + Git_Repo_Url            
     echo 'Git_Hub_Credentials       : ' + Git_Hub_Credentials     
 
+    stage("Manual Intervention"){
+
+        input 'Manual Intervention Point for Demo Purposes'
+
+    }
+
     dir('./') {
         deleteDir()
     }
 
-    ISPW_Release = "GLF1" + ISPW_Release
+    def releaseNumber       = Git_Release_Tag.substring(1, 9)
+    def releaseNumberParts  = releaseNumber.split("[.]")
+
+    ISPW_Release = "GLF1" + releaseNumberParts[0] + releaseNumberParts[1] + releaseNumberParts[2]
+
+    echo "ISPW_Release              : " + ISPW_Release
 
     currentBuild.displayName = ISPW_Application + "/" + ISPW_Owner_Id + ", Release: " + ISPW_Release
     

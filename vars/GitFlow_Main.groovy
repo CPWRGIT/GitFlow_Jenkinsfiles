@@ -728,7 +728,7 @@ def getCodeCoverageParm(settings) {
 def startReleaseProcess(assignmentId, settings) {
 
     stage("Start Release") {
-        def ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
+        //def ispwReleaseNumber   = determineIspwReleaseNumber(settings.currentTag)
 
         build(
             job: '../Demo_Workflow/Run_Release',
@@ -747,8 +747,12 @@ def startReleaseProcess(assignmentId, settings) {
                     value:  settings.hci.user 
                 ), 
                 string(
-                    name:   'ISPW_Release', 
-                    value:  ispwReleaseNumber
+                    name:   'Git_Release_Tag', 
+                    value:  settings.currentTag
+                ), 
+                string(
+                    name:   'ISPW_App_Prefix', 
+                    value:  settings.ispw.appPrefix
                 ), 
                 string(
                     name:   'Host_Connection', 
@@ -841,11 +845,3 @@ def startReleaseProcess(assignmentId, settings) {
 //         )    
 //     }
 // }
-
-def determineIspwReleaseNumber(tag) {
-
-    def releaseNumber       = tag.substring(1, 9)
-    def releaseNumberParts  = releaseNumber.split("[.]")
-
-    return releaseNumberParts[0] + releaseNumberParts[1] + releaseNumberParts[2]
-}
