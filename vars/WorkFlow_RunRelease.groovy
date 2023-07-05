@@ -1,11 +1,30 @@
 node {
     def continueRelease         = false
 
+    stage("Manual Intervention"){
+
+        input 'Manual Intervention Point for Demo Purposes'
+
+    }
+
+    echo "Paramters"
+    echo 'ISPW_Application          : ' + ISPW_Application        
+    echo 'ISPW_Assignment           : ' + ISPW_Assignment         
+    echo 'ISPW_Owner_Id             : ' + ISPW_Owner_Id            
+    echo 'ISPW_Release              : ' + ISPW_Release             
+    echo 'Host_Connection           : ' + Host_Connection          
+    echo 'Jenkins_CES_Credentials   : ' + Jenkins_CES_Credentials  
+    echo 'ISPW_Runtime_Config       : ' + ISPW_Runtime_Config     
+    echo 'Git_Repo_Url              : ' + Git_Repo_Url            
+    echo 'Git_Hub_Credentials       : ' + Git_Hub_Credentials     
+
     dir('./') {
         deleteDir()
     }
 
-    currentBuild.displayName = ISPW_Application + "/" + Owner_Id + ", Release: " + ispwRelease
+    ISPW_Release = "GLF1" + ISPW_Release
+
+    currentBuild.displayName = ISPW_Application + "/" + ISPW_Owner_Id + ", Release: " + ISPW_Release
     
     stage("Create ISPW Release"){
 
@@ -15,11 +34,12 @@ node {
             consoleLogResponseBody: true,             
             ispwAction:             'CreateRelease', 
             ispwRequestBody: """
-                runtimeConfiguration=${ispwRuntimeConfig}
-                stream=GITDEMO1
+                runtimeConfiguration=${ISPW_Runtime_Config}
+                stream=GITFLOW
                 application=${ISPW_Application}
-                releaseId=${ispwRelease}
-                description=RELEASE ${ispwRelease} FOR GITFLOW APP ${ISPW_Application}
+                subAppl=${ISPW_Application}
+                releaseId=${ISPW_Release}
+                description=RELEASE ${ISPW_Release} FOR GITFLOW APP ${ISPW_Application}
             """
         )
     }
@@ -32,14 +52,13 @@ node {
             consoleLogResponseBody: true,             
             ispwAction:             'TransferTask', 
             ispwRequestBody:        """
-                runtimeConfiguration=${ispwRuntimeConfig}
+                runtimeConfiguration=${ISPW_Runtime_Config}
                 assignmentId=${ISPW_Assignment}
                 level=RLSE
-                containerId=${ispwRelease}
+                containerId=${ISPW_Release}
                 containerType=R
             """
         )        
-
     }
     
     stage("Promote Release to PREP"){
@@ -50,15 +69,14 @@ node {
             consoleLogResponseBody: true,             
             ispwAction:             'PromoteRelease', 
             ispwRequestBody:        """
-                runtimeConfiguration=${ispwRuntimeConfig}
-                releaseId=${ispwRelease}
-                level=PREP                
+                runtimeConfiguration=${ISPW_Runtime_Config}
+                releaseId=${ISPW_Release}
+                level=RLSE                
             """
         )        
 
     }
 
-{
     // stage("Clone Repo"){
         
     //     checkout(
@@ -119,15 +137,36 @@ node {
             
     //     }
     // }
-}
-    stage("Evaluation - Manual Input"){
+
+    stage("Manual Intervention"){
+
+        input 'Manual Intervention Point for Demo Purposes'
+
+    }
+
+    stage("Promote Release to PROD"){
+        
+        ispwOperation(
+            connectionId:           Host_Connection, 
+            credentialsId:          Jenkins_CES_Credentials, 
+            consoleLogResponseBody: true,             
+            ispwAction:             'PromoteRelease', 
+            ispwRequestBody:        """
+                runtimeConfiguration=${ISPW_Runtime_Config}
+                releaseId=${ISPW_Release}
+                level=PREP                
+            """
+        )        
+    }
+
+    stage("Decision"){
 
         def releaseStatus
 
         releaseStatus = input(
             message: 'Select the status for the release from the options below and click "Proceed"', 
             parameters: [
-                choice(choices: ['Successful Release', 'Fallback Release'], description: 'Options', name: 'releaseOption')]        
+                choice(choices: ['Successful Release', 'Abort Release'], description: 'Options', name: 'releaseOption')]        
         )
 
         if(releaseStatus == 'Successful Release'){
@@ -140,21 +179,37 @@ node {
 
     if(continueRelease){
 
-        stage("Promote Release to MAIN"){
-            
+        stage("Close Release"){
+
             ispwOperation(
                 connectionId:           Host_Connection, 
                 credentialsId:          Jenkins_CES_Credentials, 
                 consoleLogResponseBody: true,             
-                ispwAction:             'PromoteRelease', 
+                ispwAction:             'CloseRelease', 
                 ispwRequestBody:        """
-                    runtimeConfiguration=${ispwRuntimeConfig}
-                    releaseId=${ispwRelease}
-                    level=MAIN                
+                    runtimeConfiguration=${ISPW_Runtime_Config}
+                    releaseId=${ISPW_Release}
                 """
-            )        
-
+            )
         }
+    }
+    else
+    {
+        // stage("Fallback Release"){
+
+        //     ispwOperation(
+        //         connectionId:           Host_Connection, 
+        //         credentialsId:          Jenkins_CES_Credentials, 
+        //         consoleLogResponseBody: true,             
+        //         ispwAction:             'FallbackRelease', 
+        //         ispwRequestBody:        """
+        //             runtimeConfiguration=${ISPW_Runtime_Config}
+        //             releaseId=${ISPW_Release}
+        //             level=PROD
+        //         """
+        //     )
+
+        // }
 
         // stage("Close Release"){
 
@@ -164,80 +219,47 @@ node {
         //         consoleLogResponseBody: true,             
         //         ispwAction:             'CloseRelease', 
         //         ispwRequestBody:        """
-        //             runtimeConfiguration=${ispwRuntimeConfig}
-        //             releaseId=${ispwRelease}
+        //             runtimeConfiguration=${ISPW_Runtime_Config}
+        //             releaseId=${ISPW_Release}
         //         """
         //     )
 
         // }
-    }
-    else
-    {
-        stage("Fallback Release"){
 
-            ispwOperation(
-                connectionId:           Host_Connection, 
-                credentialsId:          Jenkins_CES_Credentials, 
-                consoleLogResponseBody: true,             
-                ispwAction:             'FallbackRelease', 
-                ispwRequestBody:        """
-                    runtimeConfiguration=${ispwRuntimeConfig}
-                    releaseId=${ispwRelease}
-                    level=PROD
-                """
-            )
+        // stage("Create Bugfix Branch"){
+        //     build(
+        //         job: '../GITDEMO_Workflow/GITDEMO_Branch_Managenent', 
+        //         parameters: [
+        //             string(name: 'BranchAction', value: 'Create'), 
+        //             string(name: 'HostUserId', value: gitRepo), 
+        //             string(name: 'GitHubCredentialsId', value: gitCredentials), 
+        //             string(name: 'BranchType', value: 'Bugfix'), 
+        //             string(name: 'BranchName', value: 'failed_' + gitTagName), 
+        //             booleanParam(name: 'DeleteAssignment', value: false)
+        //         ]
+        //     )
+        // }
 
-        }
-
-        stage("Close Release"){
-
-            ispwOperation(
-                connectionId:           Host_Connection, 
-                credentialsId:          Jenkins_CES_Credentials, 
-                consoleLogResponseBody: true,             
-                ispwAction:             'CloseRelease', 
-                ispwRequestBody:        """
-                    runtimeConfiguration=${ispwRuntimeConfig}
-                    releaseId=${ispwRelease}
-                """
-            )
-
-        }
-
-        stage("Create Bugfix Branch"){
-            build(
-                job: '../GITDEMO_Workflow/GITDEMO_Branch_Managenent', 
-                parameters: [
-                    string(name: 'BranchAction', value: 'Create'), 
-                    string(name: 'HostUserId', value: gitRepo), 
-                    string(name: 'GitHubCredentialsId', value: gitCredentials), 
-                    string(name: 'BranchType', value: 'Bugfix'), 
-                    string(name: 'BranchName', value: 'failed_' + gitTagName), 
-                    booleanParam(name: 'DeleteAssignment', value: false)
-                ]
-            )
-        }
-
-        stage("Clone Repo"){
+        // stage("Clone Repo"){
             
-            checkout(
-                changelog: false, 
-                poll: false, 
-                scm: [
-                    $class: 'GitSCM', 
-                    branches: [[name: '*/main']], 
-                    doGenerateSubmoduleConfigurations: false, 
-                    extensions: [], 
-                    submoduleCfg: [], 
-                    userRemoteConfigs: [
-                        [
-                            credentialsId: gitCredentials, 
-                            url: "https://github.com/CPWRGIT/${gitRepo}.git"
-                        ]
-                    ]
-                ]
-            )
-        }
+        //     checkout(
+        //         changelog: false, 
+        //         poll: false, 
+        //         scm: [
+        //             $class: 'GitSCM', 
+        //             branches: [[name: '*/main']], 
+        //             doGenerateSubmoduleConfigurations: false, 
+        //             extensions: [], 
+        //             submoduleCfg: [], 
+        //             userRemoteConfigs: [
+        //                 [
+        //                     credentialsId: gitCredentials, 
+        //                     url: "https://github.com/CPWRGIT/${gitRepo}.git"
+        //                 ]
+        //             ]
+        //         ]
+        //     )
+        // }
 
         // stage("Remove Tag"){
           

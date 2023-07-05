@@ -761,7 +761,15 @@ def startReleaseProcess(assignmentId, settings) {
                 string(
                     name:   'ISPW_Runtime_Config', 
                     value:  settings.ispw.runtimeConfig
-                )
+                ),
+                string(
+                    name:   'Git_Repo_Url', 
+                    value:  settings.git.repoUrl
+                ),
+                string(
+                    name:   'Git_Hub_Credentials', 
+                    value:  settings.git.credentialsId
+                )                
             ], 
             waitForStart: true
         )
