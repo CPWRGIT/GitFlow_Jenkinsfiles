@@ -67,6 +67,10 @@ node {
         )        
     }
     
+    stage("Release Test"){
+        sleep 10
+    }
+
     stage("Promote Release to PREP"){
         
         ispwOperation(
@@ -143,6 +147,10 @@ node {
             
     //     }
     // }
+
+    stage("User Acceptance Test"){
+        sleep 10
+    }
 
     stage("Manual Intervention"){
 
