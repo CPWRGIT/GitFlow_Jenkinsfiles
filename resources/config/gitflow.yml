@@ -91,6 +91,8 @@ executionEnvironments:
       copySuffixes:           'cpy'
     xlr:
       template:               'GitFlow/GitFlow_Release'
+    jenkins:
+      cliPath:                'C:/WB_CLI_201501'
     ispw:
       libraryQualifier:         'SALESSUP'    
       mfProject:
