@@ -247,6 +247,8 @@ def deactivateSandboxFlag(settings) {
 
 def cloneRepo(settings) {
 
+    stage ('Checkout') {
+
         if(BRANCH_NAME.contains("release")) {
 
             checkout(
