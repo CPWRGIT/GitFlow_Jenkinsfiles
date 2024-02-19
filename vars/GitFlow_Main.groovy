@@ -74,6 +74,12 @@ def runFeature(settings) {
 
             runIntegrationTests(settings)
 
+            junit(
+                allowEmptyResults:  true, 
+                keepLongStdio:      true, 
+                testResults:        settings.ttt.results.jUnit.folder + '/*.xml'
+            )
+
             getCodeCoverage(settings)
         }
     }
@@ -556,11 +562,6 @@ def runUnitTests(Map settings) {
             logLevel:                           'INFO'
         )
 
-        junit(
-            allowEmptyResults:  true, 
-            keepLongStdio:      true, 
-            testResults:        settings.ttt.results.jUnit.folder + '/*.xml'
-        )
     }
 }
 
