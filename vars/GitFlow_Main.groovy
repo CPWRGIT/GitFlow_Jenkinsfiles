@@ -530,40 +530,40 @@ def runUnitTests(Map settings) {
 
         echo "[Info] - Execute Unit Tests."
 
-        def loadLibName
+        // def loadLibName
 
-        if (!(settings.ttt.featureLoadLib == null)) {
-            loadLibName = settings.ttt.featureLoadLib
-        } else {
-            loadLibName = settings.ispw.libraryQualifier + '.' + settings.ispw.application  + '.' + 'FEAT.LOAD'
-        }
+        // if (!(settings.ttt.featureLoadLib == null)) {
+        //     loadLibName = settings.ttt.featureLoadLib
+        // } else {
+        //     loadLibName = settings.ispw.libraryQualifier + '.' + settings.ispw.application  + '.' + 'FEAT.LOAD'
+        // }
 
-        totaltest(
-            connectionId:                       settings.hci.connectionId,
-            serverUrl:                          settings.ces.url, 
-            serverCredentialsId:                settings.hci.credentialsId, 
-            selectEnvironmentRadio:             '-hci',
-            credentialsId:                      settings.hci.credentialsId, 
-            //environmentId:                      settings.ttt.environmentIds.virtualized,
-            localConfig:                        false, 
-            folderPath:                         settings.ttt.vtFolder, 
-            recursive:                          true, 
-            selectProgramsOption:               true, 
-            jsonFile:                           settings.ispw.changedProgramsFile,
-            haltPipelineOnFailure:              false,                 
-            stopIfTestFailsOrThresholdReached:  false,
-            createJUnitReport:                  true, 
-            createReport:                       true, 
-            createResult:                       true, 
-            createSonarReport:                  true,
-            //contextVariables:                   '"load_lib=' + loadLibName + '"',
-            collectCodeCoverage:                true,
-            collectCCRepository:                settings.coco.repo,
-            collectCCSystem:                    settings.coco.systemId,
-            collectCCTestID:                    settings.coco.testId,
-            clearCodeCoverage:                  false,
-            logLevel:                           'INFO'
-        )
+        // totaltest(
+        //     connectionId:                       settings.hci.connectionId,
+        //     serverUrl:                          settings.ces.url, 
+        //     serverCredentialsId:                settings.hci.credentialsId, 
+        //     selectEnvironmentRadio:             '-hci',
+        //     credentialsId:                      settings.hci.credentialsId, 
+        //     //environmentId:                      settings.ttt.environmentIds.virtualized,
+        //     localConfig:                        false, 
+        //     folderPath:                         settings.ttt.vtFolder, 
+        //     recursive:                          true, 
+        //     selectProgramsOption:               true, 
+        //     jsonFile:                           settings.ispw.changedProgramsFile,
+        //     haltPipelineOnFailure:              false,                 
+        //     stopIfTestFailsOrThresholdReached:  false,
+        //     createJUnitReport:                  true, 
+        //     createReport:                       true, 
+        //     createResult:                       true, 
+        //     createSonarReport:                  true,
+        //     //contextVariables:                   '"load_lib=' + loadLibName + '"',
+        //     collectCodeCoverage:                true,
+        //     collectCCRepository:                settings.coco.repo,
+        //     collectCCSystem:                    settings.coco.systemId,
+        //     collectCCTestID:                    settings.coco.testId,
+        //     clearCodeCoverage:                  false,
+        //     logLevel:                           'INFO'
+        // )
 
     }
 }
@@ -574,50 +574,50 @@ def runIntegrationTests(Map settings) {
 
         echo "[Info] - Execute Module Integration Tests."
 
-        if (!(settings.ttt.featureLoadLib == null)) {
-            loadLibName = settings.ttt.featureLoadLib
-        } else {
-            loadLibName = settings.ispw.libraryQualifier + '.' + settings.ispw.application  + '.' + 'FEAT.LOAD'
-        }
-
-        // settings.ttt.environmentIds.nonVirtualized.each {
-
-        //     def envType     = it.key
-        //     def envId       = it.value
-
-            totaltest(
-                connectionId:                       settings.hci.connectionId,
-                credentialsId:                      settings.hci.credentialsId,             
-                serverUrl:                          settings.ces.url, 
-                serverCredentialsId:                settings.hci.credentialsId, 
-                selectEnvironmentRadio:             '-hci',
-                //environmentId:                      envId, 
-                localConfig:                        false,
-                folderPath:                         settings.ttt.nvtFolder, 
-                recursive:                          true, 
-                selectProgramsOption:               true, 
-                jsonFile:                           settings.ispw.changedProgramsFile,
-                haltPipelineOnFailure:              false,                 
-                stopIfTestFailsOrThresholdReached:  false,
-                createJUnitReport:                  true, 
-                createReport:                       true, 
-                createResult:                       true, 
-                createSonarReport:                  true,
-                //contextVariables:                   '"load_lib=' + loadLibName + '"',
-                // contextVariables:                   '"nvt_ispw_app=' + applicationQualifier + 
-                //                                     ',nvt_ispw_level1=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level1 + 
-                //                                     ',nvt_ispw_level2=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level2 + 
-                //                                     ',nvt_ispw_level3=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level3 + 
-                //                                     ',nvt_ispw_level4=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level4 + 
-                //                                     '"',                
-                collectCodeCoverage:                true,
-                collectCCRepository:                settings.coco.repo,
-                collectCCSystem:                    settings.coco.systemId,
-                collectCCTestID:                    settings.coco.testId,
-                clearCodeCoverage:                  false,
-                logLevel:                           'INFO'
-            )
+        // if (!(settings.ttt.featureLoadLib == null)) {
+        //     loadLibName = settings.ttt.featureLoadLib
+        // } else {
+        //     loadLibName = settings.ispw.libraryQualifier + '.' + settings.ispw.application  + '.' + 'FEAT.LOAD'
         // }
+
+        // // settings.ttt.environmentIds.nonVirtualized.each {
+
+        // //     def envType     = it.key
+        // //     def envId       = it.value
+
+        //     totaltest(
+        //         connectionId:                       settings.hci.connectionId,
+        //         credentialsId:                      settings.hci.credentialsId,             
+        //         serverUrl:                          settings.ces.url, 
+        //         serverCredentialsId:                settings.hci.credentialsId, 
+        //         selectEnvironmentRadio:             '-hci',
+        //         //environmentId:                      envId, 
+        //         localConfig:                        false,
+        //         folderPath:                         settings.ttt.nvtFolder, 
+        //         recursive:                          true, 
+        //         selectProgramsOption:               true, 
+        //         jsonFile:                           settings.ispw.changedProgramsFile,
+        //         haltPipelineOnFailure:              false,                 
+        //         stopIfTestFailsOrThresholdReached:  false,
+        //         createJUnitReport:                  true, 
+        //         createReport:                       true, 
+        //         createResult:                       true, 
+        //         createSonarReport:                  true,
+        //         //contextVariables:                   '"load_lib=' + loadLibName + '"',
+        //         // contextVariables:                   '"nvt_ispw_app=' + applicationQualifier + 
+        //         //                                     ',nvt_ispw_level1=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level1 + 
+        //         //                                     ',nvt_ispw_level2=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level2 + 
+        //         //                                     ',nvt_ispw_level3=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level3 + 
+        //         //                                     ',nvt_ispw_level4=' + synchConfig.ttt.loadLibQualfiers[ispwTargetLevel].level4 + 
+        //         //                                     '"',                
+        //         collectCodeCoverage:                true,
+        //         collectCCRepository:                settings.coco.repo,
+        //         collectCCSystem:                    settings.coco.systemId,
+        //         collectCCTestID:                    settings.coco.testId,
+        //         clearCodeCoverage:                  false,
+        //         logLevel:                           'INFO'
+        //     )
+        // // }
     }
 }
 
@@ -627,21 +627,21 @@ def getCodeCoverage(settings) {
 
     stage("Get Code Coverage") {
 
-        step(
-            [
-                $class:             'CodeCoverageBuilder', 
-                connectionId:       'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756', //CWCC
-                //connectionId:       '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4', //CWC2 , 
-                credentialsId:      settings.hci.credentialsId,
-                analysisProperties: """
-                    cc.sources=${settings.coco.sources}
-                    cc.repos=${settings.coco.repo}
-                    cc.system=${settings.coco.systemId}
-                    cc.test=${settings.coco.testId}
-                """
-                //                    cc.ddio.overrides=${ccDdioOverrides}
-            ]
-        )
+        // step(
+        //     [
+        //         $class:             'CodeCoverageBuilder', 
+        //         connectionId:       'de2ad7c3-e924-4dc2-84d5-d0c3afd3e756', //CWCC
+        //         //connectionId:       '38e854b0-f7d3-4a8f-bf31-2d8bfac3dbd4', //CWC2 , 
+        //         credentialsId:      settings.hci.credentialsId,
+        //         analysisProperties: """
+        //             cc.sources=${settings.coco.sources}
+        //             cc.repos=${settings.coco.repo}
+        //             cc.system=${settings.coco.systemId}
+        //             cc.test=${settings.coco.testId}
+        //         """
+        //         //                    cc.ddio.overrides=${ccDdioOverrides}
+        //     ]
+        // )
     }
 }
 
